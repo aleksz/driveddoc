@@ -153,7 +153,7 @@ module.factory('backend',
 //            },
             load:function (id) {
                 return $http.get('/svc', {
-                    transformResponse:jsonTransform,
+//                    transformResponse:jsonTransform,
                     params:{
                         'file_id':id
                     }

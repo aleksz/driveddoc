@@ -42,17 +42,15 @@ module.directive('alert',
             restrict:'E',
             replace:true,
             link:function (scope, element) {
+            	element.hide();
                 $rootScope.$on('error',
                     function (event, data) {
                         scope.message = data.message;
                         element.show();
                     });
-                scope.close = function () {
-                    element.hide();
-                };
             },
-            template:'<div class="hide alert alert-error">' +
-                '  <span class="close" ng-click="close()">×</span>' +
+            template:'<div class="alert alert-danger">' +
+                '  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
                 '  {{message}}' +
                 '</div>'
         }

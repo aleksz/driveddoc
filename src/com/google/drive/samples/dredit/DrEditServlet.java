@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.clientlogin.ClientLogin.Response;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -119,23 +120,30 @@ public abstract class DrEditServlet extends HttpServlet {
    * @param code  HTTP status code to respond with.
    * @param message Message body.
    */
-  protected void sendError(HttpServletResponse resp, int code, String message) {
-    try {
-      resp.sendError(code, message);
-    } catch (IOException e) {
-      throw new RuntimeException(message);
-    }
-  }
+	protected void sendError(HttpServletResponse resp, int code, String message) {
+		try {
+			resp.setStatus(code);
+			resp.getWriter().write(message);
+		} catch (IOException e) {
+			throw new RuntimeException(message);
+		}
+	}
 
-  /**
-   * Transforms a GoogleJsonResponseException to an HTTP response.
-   * @param resp  Response object.
-   * @param e     Exception object to transform.
-   */
-  protected void sendGoogleJsonResponseError(HttpServletResponse resp,
-      GoogleJsonResponseException e) {
-    sendError(resp, e.getStatusCode(), e.getLocalizedMessage());
-  }
+	/**
+	 * Transforms a GoogleJsonResponseException to an HTTP response.
+	 * 
+	 * @param resp
+	 *            Response object.
+	 * @param e
+	 *            Exception object to transform.
+	 */
+	protected void sendGoogleJsonResponseError(HttpServletResponse resp,
+			GoogleJsonResponseException e) {
+		
+		resp.setContentType("application/json");
+		resp.setCharacterEncoding("utf-8");
+		sendError(resp, e.getStatusCode(), e.getLocalizedMessage());
+	}
 
 	/**
 	 * Redirects to OAuth2 consent page if user is not logged in.
