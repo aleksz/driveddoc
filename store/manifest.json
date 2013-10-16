@@ -1,0 +1,16 @@
+{
+  "name": "Drive DigiDoc",
+  "description": "DigiDoc support for GDrive",
+  "version": "1.0",
+  "manifest_version": 2,
+  "container" : "GOOGLE_DRIVE",
+  "api_console_project_id" : "610309933249",
+  "icons": {
+    "128": "icon_128.png"
+  },
+  "app": {
+    "launch": {
+      "web_url": "http://driveddoc.appspot.com/"
+    }
+  }
+}

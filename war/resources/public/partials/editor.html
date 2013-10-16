@@ -1,0 +1,67 @@
+<div class="container-fluid">
+  <div id="doc-bar" class="row-fluid">
+    <span class="span4">
+        <h3 class="doc-title">{{doc.info.title}}</h3>
+    </span>
+  </div>
+</div>
+   
+<div class="row">
+	<div class="col-md-6">
+	    <div class="panel panel-default">
+	    	<div class="panel-heading">Files</div>
+	    	<div class="panel-body">
+	    		<div class="progress progress-striped active" x-ng-show="editor.loading">
+				  <div class="progress-bar" role="progressbar" style="width: 100%">
+				    <span class="sr-only">In progress</span>
+				  </div>
+				</div>
+			    <table class="table">
+			    	<tbody editor>
+			    		<tr x-ng-repeat="file in doc.info.files">
+                			<td>
+                    			<div class="dropdown">
+                    				<!-- img x-ng-src="{{file.iconLink}}"/--> 
+                    				<!-- a class="dropdown-toggle" data-toggle="dropdown" href="#"-->
+                    					{{file.title}}
+                    				<!--  /a-->
+                    				<!--ul class="dropdown-menu" role="menu">
+                    					<li role="presentation" x-ng-repeat="app in file.apps">
+                							<a role="menuitem" href="{{app.link}}" target="_blank"> 
+                								<img x-ng-src="{{app.iconLink}}"/>
+                								{{app.title}}
+                							</a>
+                						</li>
+	                            	</ul-->
+	                        	</div>
+	                		</td>
+                		</tr>
+			    	</tbody>
+			    </table>
+			</div>
+	    </div>
+	</div>
+  	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">Signatures</div>
+			<div class="panel-body">
+	    		<div class="progress progress-striped active" x-ng-show="editor.loading">
+				  <div class="progress-bar"  role="progressbar" style="width: 100%">
+				    <span class="sr-only">In progress</span>
+				  </div>
+				</div>
+				<table class="table">
+			    	<tbody>
+			    		<tr x-ng-repeat="signature in doc.info.signatures">
+			    			<td>
+			    				<span class="label label-success" x-ng-hide="signature.errors.length">Valid</span>
+			    				<span class="label label-danger" x-ng-show="signature.errors.length">Invalid</span> 
+			    				{{signature.signerName}} {{signature.personalCode}}
+			    			</td>
+			    		</tr>
+			    	</tbody>
+			   	</table>
+			</div>
+		</div>
+	</div>
+</div>
