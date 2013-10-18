@@ -111,19 +111,23 @@ public class CredentialManager {
     credentialStore.delete(userId, get(userId));
   }
 
-  /**
-   * Generates a consent page url.
- * @param stateParam 
-   * @return A consent page url string for user redirection.
-   */
-  public String getAuthorizationUrl(String state) {
-    GoogleAuthorizationCodeRequestUrl urlBuilder =
-        new GoogleAuthorizationCodeRequestUrl(
-        clientSecrets.getWeb().getClientId(),
-        clientSecrets.getWeb().getRedirectUris().get(0),
-        SCOPES).setAccessType("offline").setApprovalPrompt("force").setState(state);
-	  return urlBuilder.build();
-  }
+	/**
+	 * Generates a consent page url.
+	 * 
+	 * @param stateParam
+	 * @return A consent page url string for user redirection.
+	 */
+	public String getAuthorizationUrl(String state) {
+		GoogleAuthorizationCodeRequestUrl urlBuilder = new GoogleAuthorizationCodeRequestUrl(
+				clientSecrets.getWeb().getClientId(), 
+				clientSecrets.getWeb().getRedirectUris().get(0), 
+				SCOPES)
+			.setAccessType("offline")
+			.setApprovalPrompt("auto")
+			.setState(state);
+		
+		return urlBuilder.build();
+	}
 
   /**
    * Retrieves a new access token by exchanging the given code with OAuth2
@@ -140,10 +144,13 @@ public class CredentialManager {
           clientSecrets.getWeb().getClientSecret(),
           code,
           clientSecrets.getWeb().getRedirectUris().get(0)).execute();
-      return buildEmpty().setAccessToken(response.getAccessToken());
+      
+      return buildEmpty().setFromTokenResponse(response);
+      
     } catch (IOException e) {
       new RuntimeException("An unknown problem occured while retrieving token");
     }
+    
     return null;
   }
 }
