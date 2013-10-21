@@ -20,13 +20,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientApp;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientSignature;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.FileInContainer;
@@ -34,6 +32,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponse;
+import com.google.api.client.util.IOUtils;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.App;
 import com.google.api.services.drive.model.App.Icons;
@@ -49,13 +48,7 @@ import ee.sk.digidoc.SignedDoc;
 import ee.sk.digidoc.factory.DigiDocFactory;
 import ee.sk.utils.ConfigManager;
 
-/**
- * Servlet providing a small API for the DrEdit JavaScript client to use in
- * manipulating files.  Each operation (GET, POST, PUT) issues requests to the
- * Google Drive API.
- *
- * @author vicfryzel@google.com (Vic Fryzel)
- */
+
 @SuppressWarnings("serial")
 public class FileServlet extends DrEditServlet {
 	
@@ -68,6 +61,7 @@ public class FileServlet extends DrEditServlet {
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
+	  
     Drive drive = getDriveService(getCredential(req, resp));
     String fileId = req.getParameter("file_id");
 
@@ -75,11 +69,17 @@ public class FileServlet extends DrEditServlet {
       sendError(resp, 400, "The `file_id` URI parameter must be specified.");
       return;
     }
-
+    
     try {
     	
 		File file = drive.files().get(fileId).execute();
-		sendJson(resp, downloadFileContent(drive, file));
+		String containerFileIndex = req.getParameter("index");
+		
+		if (containerFileIndex == null) {
+			sendJson(resp, downloadFileContent(drive, file));
+		} else {
+			download(resp, drive, file, containerFileIndex);
+		}
 	  
     } catch (GoogleJsonResponseException e) {
       if (e.getStatusCode() == 401) {
@@ -92,6 +92,22 @@ public class FileServlet extends DrEditServlet {
       sendGoogleJsonResponseError(resp, e);
     }
   }
+
+	private void download(HttpServletResponse resp, Drive drive, File file,
+			String containerFileIndex) throws IOException {
+		
+		SignedDoc signedDoc = getSignedDoc(drive, file);
+		DataFile dataFile = signedDoc.getDataFile(new Integer(containerFileIndex));
+		
+		resp.setContentType("application/x-download");
+		resp.setHeader("Content-Disposition", "attachment; filename=" + dataFile.getFileName());
+		
+		try {
+			IOUtils.copy(dataFile.getBodyAsStream(), resp.getOutputStream());
+		} catch (DigiDocException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
   /**
    * Create a new file given a JSON representation, and return the JSON
@@ -155,10 +171,7 @@ public class FileServlet extends DrEditServlet {
 		container.title = file.getTitle();
 		container.id = file.getId();
 		
-		HttpResponse response = drive.getRequestFactory().buildGetRequest(
-				new GenericUrl(file.getDownloadUrl())).execute();
-
-		SignedDoc signedDoc = getSignedDoc(response.getContent());
+		SignedDoc signedDoc = getSignedDoc(drive, file);
 		
 		addSignatures(container, signedDoc);
 
@@ -182,6 +195,13 @@ public class FileServlet extends DrEditServlet {
 		}
 
 		return container;
+	}
+
+	private SignedDoc getSignedDoc(Drive drive, File file) throws IOException {
+		HttpResponse response = drive.getRequestFactory().buildGetRequest(
+				new GenericUrl(file.getDownloadUrl())).execute();
+	
+		return getSignedDoc(response.getContent());
 	}
 
 	private void addSignatures(ClientContainer container, SignedDoc signedDoc) {
