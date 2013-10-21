@@ -8,7 +8,6 @@ var EditorState = {
 google.load('picker', '1');
 
 angular.module('app', ['app.services', 'app.directives'])
-    .constant('appId', ['610309933249.apps.googleusercontent.com'])
     .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
         .when('/edit/:id', {
