@@ -7,7 +7,7 @@ var EditorState = {
 
 google.load('picker', '1');
 
-angular.module('app', ['app.services', 'app.directives'])
+angular.module('app', ['app.services', 'app.directives', 'ngRoute'])
     .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
         .when('/edit/:id', {
