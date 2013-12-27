@@ -228,6 +228,7 @@ public class FileServlet extends DrEditServlet {
 		return new ClientSignature(
 				keyInfo.getSubjectFirstName() + " " + keyInfo.getSubjectLastName(),
 				keyInfo.getSubjectPersonalCode(),
+				signature.getSignedProperties().getSigningTime(),
 				errors);
 	}
 	

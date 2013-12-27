@@ -61,7 +61,7 @@
 			    			<td>
 			    				<span class="label label-success" x-ng-hide="signature.errors.length">Valid</span>
 			    				<span class="label label-danger" x-ng-show="signature.errors.length">Invalid</span> 
-			    				{{signature.signerName}} {{signature.personalCode}}
+			    				<span>{{signature.signerName}} ({{signature.personalCode}}) {{signature.date | date:'medium'}}</span>
 			    			</td>
 			    		</tr>
 			    	</tbody>
