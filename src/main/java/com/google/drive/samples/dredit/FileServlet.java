@@ -54,7 +54,6 @@ import ee.sk.utils.ConfigManager;
 public class FileServlet extends DrEditServlet {
 	
 	private static final long serialVersionUID = 1L;
-
 	private static final Logger LOG = Logger.getLogger(FileServlet.class.getName());
 	
   /**

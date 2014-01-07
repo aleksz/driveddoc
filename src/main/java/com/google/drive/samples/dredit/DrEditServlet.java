@@ -15,16 +15,13 @@
 package com.google.drive.samples.dredit;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
-import javax.servlet.ServletException;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -65,28 +62,9 @@ public abstract class DrEditServlet extends HttpServlet {
    */
   public static final String DEFAULT_MIMETYPE = "text/plain";
 
-  /**
-   * Path component under war/ to locate client_secrets.json file.
-   */
-  public static final String CLIENT_SECRETS_FILE_PATH
-      = "/WEB-INF/client_secrets.json";
-
-  /**
-   * A credential manager to get, set, delete credential objects.
-   */
-  private CredentialManager credentialManager = null;
-
-  /**
-   * Initializes the Servlet.
-   */
-  @Override
-  public void init() throws ServletException {
-    super.init();
-    // init credential manager
-    credentialManager = new CredentialManager(
-        getClientSecrets(), TRANSPORT, JSON_FACTORY);
-  }
-
+  @Inject
+  public CredentialManager credentialManager;
+  
   /**
    * Dumps the given object as JSON and responds with given HTTP status code.
    * @param resp  Response object.
@@ -238,20 +216,5 @@ public abstract class DrEditServlet extends HttpServlet {
   protected Oauth2 getOauth2Service(Credential credential) {
     return new Oauth2.Builder(TRANSPORT, JSON_FACTORY, credential)
     	.setApplicationName("Drive DigiDoc").build();
-  }
-
-  /**
-   * Reads client_secrets.json and creates a GoogleClientSecrets object.
-   * @return A GoogleClientsSecrets object.
-   */
-  private GoogleClientSecrets getClientSecrets() {
-    // TODO: do not read on each request
-    InputStream stream =
-        getServletContext().getResourceAsStream(CLIENT_SECRETS_FILE_PATH);
-    try {
-      return GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(stream));
-    } catch (IOException e) {
-      throw new RuntimeException("No client_secrets.json found");
-    }
   }
 }
