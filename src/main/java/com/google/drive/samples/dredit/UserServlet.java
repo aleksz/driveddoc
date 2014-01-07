@@ -16,6 +16,7 @@ package com.google.drive.samples.dredit;
 
 import java.io.IOException;
 
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,30 +24,26 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
 
-/**
- * Servlet that returns the profile of the currently logged-in user.
- *
- * @author nivco@google.com (Nicolas Garnier)
- */
-@SuppressWarnings("serial")
+@Singleton
 public class UserServlet extends DrEditServlet {
-  /**
-   * Returns a JSON representation of the user's profile.
-   */
-  @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
-  	Oauth2 service = getOauth2Service(getCredential(req, resp));
-    try {
-      Userinfo about = service.userinfo().get().execute();
-      sendJson(resp, about);
-    } catch (GoogleJsonResponseException e) {
-      if (e.getStatusCode() == 401) {
-        // The user has revoked our token or it is otherwise bad.
-        // Delete the local copy so that their next page load will recover.
-        deleteCredential(req, resp);
-        sendGoogleJsonResponseError(resp, e);
-      }
-    }
-  }
+
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws IOException {
+		Oauth2 service = getOauth2Service(getCredential(req, resp));
+		try {
+			Userinfo about = service.userinfo().get().execute();
+			sendJson(resp, about);
+		} catch (GoogleJsonResponseException e) {
+			if (e.getStatusCode() == 401) {
+				// The user has revoked our token or it is otherwise bad.
+				// Delete the local copy so that their next page load will
+				// recover.
+				deleteCredential(req, resp);
+				sendGoogleJsonResponseError(resp, e);
+			}
+		}
+	}
 }

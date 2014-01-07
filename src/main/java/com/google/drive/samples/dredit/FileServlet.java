@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -49,9 +50,11 @@ import ee.sk.digidoc.factory.DigiDocFactory;
 import ee.sk.utils.ConfigManager;
 
 
-@SuppressWarnings("serial")
+@Singleton
 public class FileServlet extends DrEditServlet {
 	
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOG = Logger.getLogger(FileServlet.class.getName());
 	
   /**

@@ -16,12 +16,14 @@ package com.google.drive.samples.dredit;
 
 import java.io.IOException;
 
+import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.drive.samples.dredit.model.State;
 
+@Singleton
 public class StartPageServlet extends DrEditServlet {
 	
 	private static final long serialVersionUID = 1L;
