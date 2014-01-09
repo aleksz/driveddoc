@@ -78,7 +78,14 @@ public class FileServlet extends DrEditServlet {
 		String containerFileIndex = req.getParameter("index");
 		
 		if (containerFileIndex == null) {
-			sendJson(resp, downloadFileContent(drive, file));
+			ClientContainer fileContent = downloadFileContent(drive, file);
+			
+			if (fileContent == null) {
+				sendError(resp, 400, "Could not read file");
+			} else {
+				sendJson(resp, fileContent);
+			}
+			
 		} else {
 			download(resp, drive, file, containerFileIndex);
 		}
@@ -175,6 +182,10 @@ public class FileServlet extends DrEditServlet {
 		
 		SignedDoc signedDoc = getSignedDoc(drive, file);
 		
+		if (signedDoc == null) {
+			return null;
+		}
+		
 		addSignatures(container, signedDoc);
 
 		for (Object dataFileObject : signedDoc.getDataFiles()) {
@@ -257,7 +268,8 @@ public class FileServlet extends DrEditServlet {
 			LOG.finest("Loaded signed doc");
 			return doc;
 		} catch (DigiDocException e) {
-			throw new RuntimeException(e);
+			LOG.warning("Could not parse file: " + e.getMessage());
+			return null;
 		}
 	}
 	
