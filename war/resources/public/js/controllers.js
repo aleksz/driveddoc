@@ -89,6 +89,7 @@ function SignatureCtrl($scope, backend, doc, $timeout, $log, editor, $rootScope,
 	}
 	
 	$scope.form = {};
+	$scope.ocspCertFile = {};
 	$scope.signatureContainer = {};
 
 	$scope.storeKey = function() {

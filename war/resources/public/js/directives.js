@@ -12,7 +12,7 @@ module.directive('file', function($rootScope, $log) {
                 var files = event.target.files;
                 var file = files[0];
                 $scope.$apply(function($scope) {
-                	$scope[attrs["id"]] = file;
+                	$scope.$parent[attrs["id"]] = file;
                 });
             });
 		}
