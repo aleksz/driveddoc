@@ -250,7 +250,7 @@ module.factory('backend',
             },
             uploadOCSPKey: function(uploadUrl, key) {
             	return $http.post(uploadUrl, key, {
-					headers: { 'Content-Type': false },
+					headers: { 'Content-Type': undefined },
 					transformRequest: function(data) { return data; }
         		});
             },
