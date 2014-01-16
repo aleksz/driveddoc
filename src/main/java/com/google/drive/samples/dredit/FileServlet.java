@@ -17,11 +17,11 @@ package com.google.drive.samples.dredit;
 import static java.util.Arrays.asList;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,10 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientSignature;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.FileInContainer;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.ByteArrayContent;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpResponse;
 import com.google.api.client.util.IOUtils;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.App;
@@ -46,8 +47,6 @@ import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.KeyInfo;
 import ee.sk.digidoc.Signature;
 import ee.sk.digidoc.SignedDoc;
-import ee.sk.digidoc.factory.DigiDocFactory;
-import ee.sk.utils.ConfigManager;
 
 
 @Singleton
@@ -55,6 +54,15 @@ public class FileServlet extends DrEditServlet {
 	
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(FileServlet.class.getName());
+	
+	private DigiDocService digiDocService;
+	private GDriveService gDriveService;
+	
+	@Inject
+	public FileServlet(GDriveService gDriveService, DigiDocService digiDocService) {
+		this.gDriveService = gDriveService;
+		this.digiDocService = digiDocService;
+	}
 	
   /**
    * Given a {@code file_id} URI parameter, return a JSON representation
@@ -64,7 +72,7 @@ public class FileServlet extends DrEditServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
 	  
-    Drive drive = getDriveService(getCredential(req, resp));
+    Credential credential = getCredential(req, resp);
     String fileId = req.getParameter("file_id");
 
     if (fileId == null) {
@@ -74,11 +82,11 @@ public class FileServlet extends DrEditServlet {
     
     try {
     	
-		File file = drive.files().get(fileId).execute();
+		File file = gDriveService.getFile(fileId, credential);
 		String containerFileIndex = req.getParameter("index");
 		
 		if (containerFileIndex == null) {
-			ClientContainer fileContent = downloadFileContent(drive, file);
+			ClientContainer fileContent = downloadFileContent(credential, file);
 			
 			if (fileContent == null) {
 				sendError(resp, 400, "Could not read file");
@@ -87,7 +95,7 @@ public class FileServlet extends DrEditServlet {
 			}
 			
 		} else {
-			download(resp, drive, file, containerFileIndex);
+			download(resp, credential, file, containerFileIndex);
 		}
 	  
     } catch (GoogleJsonResponseException e) {
@@ -102,10 +110,11 @@ public class FileServlet extends DrEditServlet {
     }
   }
 
-	private void download(HttpServletResponse resp, Drive drive, File file,
+	private void download(HttpServletResponse resp, Credential credential, File file,
 			String containerFileIndex) throws IOException {
 		
-		SignedDoc signedDoc = getSignedDoc(drive, file);
+		SignedDoc signedDoc = digiDocService.parseSignedDoc(
+				gDriveService.downloadContent(file, credential));
 		DataFile dataFile = signedDoc.getDataFile(new Integer(containerFileIndex));
 		
 		resp.setContentType("application/x-download");
@@ -173,14 +182,15 @@ public class FileServlet extends DrEditServlet {
    *         because this app is setup for text/plain files.
    * @throws IOException Thrown if the request fails for whatever reason.
    */
-	private ClientContainer downloadFileContent(Drive drive, File file)
+	private ClientContainer downloadFileContent(Credential credential, File file)
 			throws IOException {
 
 		ClientContainer container = new ClientContainer();
 		container.title = file.getTitle();
 		container.id = file.getId();
 		
-		SignedDoc signedDoc = getSignedDoc(drive, file);
+		SignedDoc signedDoc = digiDocService.parseSignedDoc(
+				gDriveService.downloadContent(file, credential));
 		
 		if (signedDoc == null) {
 			return null;
@@ -208,13 +218,6 @@ public class FileServlet extends DrEditServlet {
 		}
 
 		return container;
-	}
-
-	private SignedDoc getSignedDoc(Drive drive, File file) throws IOException {
-		HttpResponse response = drive.getRequestFactory().buildGetRequest(
-				new GenericUrl(file.getDownloadUrl())).execute();
-	
-		return getSignedDoc(response.getContent());
 	}
 
 	private void addSignatures(ClientContainer container, SignedDoc signedDoc) {
@@ -259,20 +262,6 @@ public class FileServlet extends DrEditServlet {
 		return drive.apps().get(id).execute();
 	}
 
-	private SignedDoc getSignedDoc(InputStream content) {
-		try {
-			LOG.finest("Loading signed doc");
-			ConfigManager.init("jar://jdigidoc.cfg");
-			DigiDocFactory factory = ConfigManager.instance().getDigiDocFactory();
-			SignedDoc doc = factory.readDigiDocFromStream(content);
-			LOG.finest("Loaded signed doc");
-			return doc;
-		} catch (DigiDocException e) {
-			LOG.warning("Could not parse file: " + e.getMessage());
-			return null;
-		}
-	}
-	
 	private File insertFile(Drive drive, DataFile file) throws IOException {
 		try {
 			LOG.finest("Saving temporary file " + file.getFileName());

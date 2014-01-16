@@ -7,10 +7,23 @@ var EditorState = {
 
 google.load('picker', '1');
 
-angular.module('app', ['app.services', 'app.directives', 'ngRoute'])
-    .config(['$routeProvider', function ($routeProvider) {
-    $routeProvider
-        .when('/edit/:id', {
-            templateUrl: '/public/partials/editor.html',
-            controller: EditorCtrl});
-	}]);
+angular.module('app', ['app.services', 'app.directives', 'ngRoute', 'ui.bootstrap']).config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
+
+	$routeProvider.when('/edit/:id', {
+		templateUrl: '/public/partials/editor.html',
+		controller: EditorCtrl
+	});
+
+	$httpProvider.responseInterceptors.push(function($q, $rootScope) {
+		//TODO: upgrade Angular and use new API
+		return function(promise) {
+			return promise.then(function(response) {
+				return response;
+			}, function(response) {
+				$rootScope.$broadcast('error', { message: response.data });
+				return $q.reject(response);
+			});
+		}
+	});
+
+}]);

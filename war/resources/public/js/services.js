@@ -2,35 +2,52 @@
 
 var module = angular.module('app.services', []);
 
-var ONE_HOUR_IN_MS = 1000 * 60 * 60;
-
 // Shared model for current document
-module.factory('doc',
-    function ($rootScope) {
-        var service = $rootScope.$new(true);
-//        service.dirty = false;
-//        service.lastSave = 0;
-//        service.timeSinceLastSave = function () {
-//            return new Date().getTime() - this.lastSave;
-//        };
-//        service.$watch('info',
-//            function (newValue, oldValue) {
-//                if (oldValue != null && newValue === oldValue) {
-//                    service.dirty = true;
-//                }
-//            },
-//            true);
-        return service;
-    });
+module.factory('doc', function ($rootScope) {
+    return $rootScope.$new(true);
+});
 
-module.factory('editor',
-    function (doc, backend, $q, $rootScope, $log) {
+module.factory('idCard', function($log, $rootScope, $q, $timeout) {
+	
+	var plugin;
+	
+	return {
+		load: function() {
+			loadSigningPlugin("eng");
+			plugin =  new IdCardPluginHandler("eng");
+		},
+		
+		getCertificate: function() {
+			
+			var _this = this;
+			
+			return $timeout(function() {
+
+				if (!plugin) {
+					_this.load();
+				}
+				
+				return plugin.getCertificate();
+
+			}, 50);
+		},
+		
+		sign: function(certId, payloadHash) {
+			
+			return $timeout(function() {
+				return plugin.sign(certId, payloadHash);
+			});
+		}
+	}
+});
+
+module.factory('editor', function (doc, backend, $q, $rootScope, $log) {
         var editor = null;
 //        var EditSession = require("ace/edit_session").EditSession;
         var service = {
-            loading:false,
-            saving:false,
-            rebind:function (element) {
+            loading: false,
+            saving: false,
+            rebind: function (element) {
             	$log.info("Rebind editor");
             	editor = element;
 //                editor = ace.edit(element);
@@ -173,6 +190,74 @@ module.factory('backend',
                     transformResponse:jsonTransform,
                     data:JSON.stringify(fileInfo)
                 });
+            },
+            startSigning: function(fileId, personalId, phoneNumber) {
+            	return $http({
+            		url: '/sign',
+            		method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+            		params: { 
+            			'file_id': fileId,
+            			'personalId': personalId,
+            			'phoneNumber': phoneNumber
+            		},
+            		transformResponse:jsonTransform
+            	});
+            },
+            checkSignatureStatus: function(fileId, sessionId) {
+            	return $http({
+            		url: '/sign',
+            		method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+            		params: { 
+            			'file_id': fileId,
+            			'sessionId': sessionId
+            		},
+            		transformResponse:jsonTransform
+            	});
+            },
+            prepareSignature: function(fileId, cert) {
+            	return $http({
+            		url: '/sign/id',
+            		method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+            		params: { 
+            			'file_id': fileId,
+            			'cert': cert
+            		},
+            		transformResponse:jsonTransform
+            	});
+            },
+            finalizeSignature: function(fileId, signatureId, signature) {
+            	return $http({
+            		url: '/sign/id',
+            		method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+            		params: { 
+            			'file_id': fileId,
+            			'signatureId': signatureId,
+            			'signature': signature
+            		},
+            		transformResponse:jsonTransform
+            	});
+            },
+            getOCSPUploadUrl: function() {
+            	return $http({
+            		url: '/OCSPSignatureContainerUploadURL',
+            		method: 'GET',
+            		transformResponse:jsonTransform
+            	});
+            },
+            uploadOCSPKey: function(uploadUrl, key) {
+            	return $http.post(uploadUrl, key, {
+					headers: { 'Content-Type': false },
+					transformRequest: function(data) { return data; }
+        		});
+            },
+            getOCSPSignatureContainer: function() {
+            	return $http.get('OCSPSignatureContainer', {
+					transformResponse:jsonTransform
+        		});
             }
         };
         return service;

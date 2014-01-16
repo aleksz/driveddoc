@@ -48,6 +48,9 @@ repositories {
 }
 
 dependencies { 
+
+	testCompile 'junit:junit:4.11'
+
 	//appengineSdk 'com.google.appengine:appengine-java-sdk:1.8.6'
     runtime 'com.google.appengine:appengine-api-1.0-sdk:1.8.8'
     compile 'com.google.api-client:google-api-client-gson:1.17.0-rc'

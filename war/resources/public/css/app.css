@@ -46,3 +46,5 @@ body {
   color: #333333;
   white-space: nowrap;
 }
+
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }

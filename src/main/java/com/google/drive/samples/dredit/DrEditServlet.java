@@ -174,12 +174,16 @@ public abstract class DrEditServlet extends HttpServlet {
    */
   protected Credential getCredential(HttpServletRequest req,
       HttpServletResponse resp) {
-    String userId = (String) req.getSession().getAttribute(KEY_SESSION_USERID);
+    String userId = getUserId(req);
     if (userId != null) {
       return credentialManager.get(userId);
     }
     return null;
   }
+
+	protected String getUserId(HttpServletRequest req) {
+		return (String) req.getSession().getAttribute(KEY_SESSION_USERID);
+	}
 
   /**
    * Deletes the credentials of the user in the session permanently and removes
@@ -189,7 +193,7 @@ public abstract class DrEditServlet extends HttpServlet {
    */
   protected void deleteCredential(HttpServletRequest req,
       HttpServletResponse resp) {
-    String userId = (String) req.getSession().getAttribute(KEY_SESSION_USERID);
+    String userId = getUserId(req);
     if (userId != null) {
       credentialManager.delete(userId);
       req.getSession().removeAttribute(KEY_SESSION_USERID);

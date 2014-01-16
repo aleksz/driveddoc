@@ -2,7 +2,34 @@
 
 var module = angular.module('app.directives', []);
 
-module.directive('editor', function (editor) {
+module.directive('file', function($rootScope, $log) {
+	return {
+		restrict: 'E',
+		replace: true,
+		template: '<input type="file"/>',
+		link: function($scope, element, attrs) {
+			element.bind('change', function(event){
+                var files = event.target.files;
+                var file = files[0];
+                $scope.$apply(function($scope) {
+                	$scope[attrs["id"]] = file;
+                });
+            });
+		}
+	}
+});
+
+module.directive('idCard', function($rootScope, $log) {
+	return {
+		restrict: 'E',
+		replace: true,
+		template: '<DIV id="pluginLocation"></DIV>',
+		link: function($scope, element, attrs) {
+		}
+	}
+});
+
+module.directive('editor', function(editor) {
     return {
         retrict: 'A',
         link: function (scope, element) {
@@ -11,8 +38,7 @@ module.directive('editor', function (editor) {
     };
 });
 
-module.directive('alert',
-    function ($rootScope) {
+module.directive('myalert', function ($rootScope) {
         return {
             restrict:'E',
             replace:true,
