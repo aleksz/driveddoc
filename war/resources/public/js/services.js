@@ -218,11 +218,11 @@ module.factory('backend',
             },
             prepareSignature: function(fileId, cert) {
             	return $http({
-            		url: '/sign/id',
-            		method: 'GET',
+            		url: '/signatures',
+            		method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-            		params: { 
-            			'file_id': fileId,
+            		data: { 
+            			'fileId': fileId,
             			'cert': cert
             		},
             		transformResponse:jsonTransform

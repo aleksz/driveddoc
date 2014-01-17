@@ -5,6 +5,7 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.IdSignServlet;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.OCSPSignatureContainerServlet;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.OCSPSignatureContainerUploadURLServlet;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.SignServlet;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.SignatureServlet;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -43,6 +44,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 				serve("/about").with(AboutServlet.class);
 				serve("/sign").with(SignServlet.class);
 				serve("/sign/id").with(IdSignServlet.class);
+				serve("/signatures").with(SignatureServlet.class);
 				serve("/OCSPSignatureContainer").with(OCSPSignatureContainerServlet.class);
 				serve("/OCSPSignatureContainerUploadURL").with(OCSPSignatureContainerUploadURLServlet.class);
 				serve("/start", "/").with(StartPageServlet.class);

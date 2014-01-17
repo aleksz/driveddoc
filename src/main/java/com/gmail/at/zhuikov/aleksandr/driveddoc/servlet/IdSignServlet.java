@@ -1,7 +1,6 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.servlet;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -10,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContainer;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
@@ -106,47 +104,5 @@ public class IdSignServlet extends DrEditServlet {
 		
 		return new DigidocOCSPSignatureContainer(
 				new BlobstoreInputStream(description.getKey()), description);
-	}
-	
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		
-		String fileId = req.getParameter("file_id");
-		
-		Credential credential = getCredential(req, resp);
-		
-		if (fileId == null) {
-			sendError(resp, 400, "The `file_id` URI parameter must be specified.");
-			return;
-		}
-		
-		String cert = req.getParameter("cert");
-		
-		if (cert == null) {
-			sendError(resp, 400, "The `cert` URI parameter must be specified.");
-			return;
-		}
-		
-		try {
-
-			File file = gDriveService.getFile(fileId, credential);
-			InputStream content = gDriveService.downloadContent(file, credential);
-			SignedDoc signedDoc = digiDocService.parseSignedDoc(content);
-			req.getSession().setAttribute("ddoc", signedDoc);
-			IdSignSession signSession = digiDocService.prepareSignature(signedDoc, cert);
-			sendJson(resp, signSession);
-
-		} catch (GoogleJsonResponseException e) {
-			if (e.getStatusCode() == 401) {
-				// The user has revoked our token or it is otherwise bad.
-				// Delete the local copy so that their next page load will
-				// recover.
-				deleteCredential(req, resp);
-
-			}
-
-			sendGoogleJsonResponseError(resp, e);
-		}
 	}
 }
