@@ -255,7 +255,7 @@ module.factory('backend',
         		});
             },
             getOCSPSignatureContainer: function() {
-            	return $http.get('OCSPSignatureContainer', {
+            	return $http.get('/api/OCSPSignatureContainer', {
 					transformResponse:jsonTransform
         		});
             }

@@ -32,7 +32,7 @@ public abstract class AuthorizationCodeServlet extends AbstractAppEngineAuthoriz
 	protected String getRedirectUri(HttpServletRequest req)
 			throws ServletException, IOException {
 		GenericUrl url = new GenericUrl(req.getRequestURL().toString());
-		url.setRawPath("/app/oauth2callback");
+		url.setRawPath("/api/oauth2callback");
 		return url.build();
 	}
 
