@@ -15,13 +15,21 @@
 
 	<filter-mapping>
 		<filter-name>guiceFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>/api/*</url-pattern>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>guiceFilter</filter-name>
+		<url-pattern>/</url-pattern>
 	</filter-mapping>
 
 	<security-constraint>
 		<web-resource-collection>
 			<url-pattern>/*</url-pattern>
 		</web-resource-collection>
+		<auth-constraint>
+            <role-name>*</role-name>
+        </auth-constraint>
 		<user-data-constraint>
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>

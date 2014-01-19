@@ -163,13 +163,13 @@ module.factory('backend',
         };
         var service = {
             user:function () {
-                return $http.get('/user', {transformResponse:jsonTransform});
+                return $http.get('/api/user', {transformResponse:jsonTransform});
             },
 //            about:function () {
 //                return $http.get('/about', {transformResponse:jsonTransform});
 //            },
             load:function (id) {
-                return $http.get('/svc', {
+                return $http.get('/api/svc', {
 //                    transformResponse:jsonTransform,
                     params:{
                         'file_id':id
@@ -179,7 +179,7 @@ module.factory('backend',
             save:function (fileInfo, newRevision) {
                 $log.info('Saving', fileInfo);
                 return $http({
-                    url:'/svc',
+                    url:'/api/svc',
                     method:fileInfo.resource_id ? 'PUT' : 'POST',
                     headers:{
                         'Content-Type':'application/json'
@@ -193,7 +193,7 @@ module.factory('backend',
             },
             startSigning: function(fileId, personalId, phoneNumber) {
             	return $http({
-            		url: '/sign',
+            		url: '/api/sign',
             		method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
             		params: { 
@@ -206,7 +206,7 @@ module.factory('backend',
             },
             checkSignatureStatus: function(fileId, sessionId) {
             	return $http({
-            		url: '/sign',
+            		url: '/api/sign',
             		method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
             		params: { 
@@ -218,7 +218,7 @@ module.factory('backend',
             },
             prepareSignature: function(fileId, cert) {
             	return $http({
-            		url: '/signatures',
+            		url: '/api/signatures',
             		method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
             		data: { 
@@ -230,7 +230,7 @@ module.factory('backend',
             },
             finalizeSignature: function(fileId, signatureId, signature) {
             	return $http({
-            		url: '/sign/id',
+            		url: '/api/sign/id',
             		method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
             		params: { 
@@ -243,7 +243,7 @@ module.factory('backend',
             },
             getOCSPUploadUrl: function() {
             	return $http({
-            		url: '/OCSPSignatureContainerUploadURL',
+            		url: '/api/OCSPSignatureContainerUploadURL',
             		method: 'GET',
             		transformResponse:jsonTransform
             	});

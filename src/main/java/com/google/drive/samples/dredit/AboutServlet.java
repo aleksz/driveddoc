@@ -16,11 +16,13 @@ package com.google.drive.samples.dredit;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.About;
 
@@ -29,10 +31,15 @@ public class AboutServlet extends DrEditServlet {
 
 	private static final long serialVersionUID = 1L;
 
+	@Inject
+	public AboutServlet(JsonFactory jsonFactory) {
+		super(jsonFactory);
+	}
+
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
-		Drive service = getDriveService(getCredential(req, resp));
+		Drive service = getDriveService(getCredential());
 		try {
 			About about = service.about().get().execute();
 			sendJson(resp, about);
@@ -41,7 +48,7 @@ public class AboutServlet extends DrEditServlet {
 				// The user has revoked our token or it is otherwise bad.
 				// Delete the local copy so that their next page load will
 				// recover.
-				deleteCredential(req, resp);
+//				deleteCredential(req, resp);
 				sendGoogleJsonResponseError(resp, e);
 			}
 		}

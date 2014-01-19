@@ -14,6 +14,7 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.model.File;
 import com.google.drive.samples.dredit.DrEditServlet;
 import com.google.gson.Gson;
@@ -29,7 +30,8 @@ public class SignatureServlet extends DrEditServlet {
 	private GDriveService gDriveService;
 	
 	@Inject
-	public SignatureServlet(DigiDocService digiDocService, GDriveService gDriveService) {
+	public SignatureServlet(DigiDocService digiDocService, GDriveService gDriveService, JsonFactory jsonFactory) {
+		super(jsonFactory);
 		this.digiDocService = digiDocService;
 		this.gDriveService = gDriveService;
 	}
@@ -45,7 +47,7 @@ public class SignatureServlet extends DrEditServlet {
 		
 		SignatureRequest signatureRequest = new Gson().fromJson(req.getReader(), SignatureRequest.class);
 		
-		Credential credential = getCredential(req, resp);
+		Credential credential = getCredential();
 		
 		if (signatureRequest.fileId == null) {
 			sendError(resp, 400, "The `file_id` URI parameter must be specified.");
@@ -71,7 +73,7 @@ public class SignatureServlet extends DrEditServlet {
 				// The user has revoked our token or it is otherwise bad.
 				// Delete the local copy so that their next page load will
 				// recover.
-				deleteCredential(req, resp);
+//				deleteCredential(req, resp);
 
 			}
 

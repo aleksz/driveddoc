@@ -34,6 +34,7 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.client.util.IOUtils;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.App;
@@ -59,7 +60,8 @@ public class FileServlet extends DrEditServlet {
 	private GDriveService gDriveService;
 	
 	@Inject
-	public FileServlet(GDriveService gDriveService, DigiDocService digiDocService) {
+	public FileServlet(GDriveService gDriveService, DigiDocService digiDocService, JsonFactory jsonFactory) {
+		super(jsonFactory);
 		this.gDriveService = gDriveService;
 		this.digiDocService = digiDocService;
 	}
@@ -72,7 +74,7 @@ public class FileServlet extends DrEditServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
 	  
-    Credential credential = getCredential(req, resp);
+    Credential credential = getCredential();
     String fileId = req.getParameter("file_id");
 
     if (fileId == null) {
@@ -102,7 +104,7 @@ public class FileServlet extends DrEditServlet {
       if (e.getStatusCode() == 401) {
         // The user has revoked our token or it is otherwise bad.
         // Delete the local copy so that their next page load will recover.
-        deleteCredential(req, resp);
+//        deleteCredential(req, resp);
         
       }
       
@@ -134,7 +136,7 @@ public class FileServlet extends DrEditServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-    Drive service = getDriveService(getCredential(req, resp));
+    Drive service = getDriveService(getCredential());
     ClientFile clientFile = new ClientFile(req.getReader());
     File file = clientFile.toFile();
 
@@ -156,7 +158,7 @@ public class FileServlet extends DrEditServlet {
   public void doPut(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
     boolean newRevision = req.getParameter("newRevision").equals(Boolean.TRUE);
-    Drive service = getDriveService(getCredential(req, resp));
+    Drive service = getDriveService(getCredential());
     ClientFile clientFile = new ClientFile(req.getReader());
     File file = clientFile.toFile();
     // If there is content we update the given file

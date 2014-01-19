@@ -17,19 +17,16 @@ package com.google.drive.samples.dredit;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.AuthorizationCodeServlet;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.oauth2.Oauth2;
-import com.google.api.services.oauth2.model.Userinfo;
 import com.google.gson.Gson;
 
 /**
@@ -40,17 +37,18 @@ import com.google.gson.Gson;
  * @author jbd@google.com (Burcu Dogan)
  */
 @SuppressWarnings("serial")
-public abstract class DrEditServlet extends HttpServlet {
-  /**
+public abstract class DrEditServlet extends AuthorizationCodeServlet {
+	
+	
+	public DrEditServlet(JsonFactory jsonFactory) {
+		super(jsonFactory);
+	}
+
+/**
    * Default transportation layer for Google Apis Java client.
    */
   protected static final HttpTransport TRANSPORT = new NetHttpTransport();
   
-  /**
-   * Default JSON factory for Google Apis Java client.
-   */
-  protected static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-
   /**
    * Key to get/set userId from and to the session.
    */
@@ -122,84 +120,6 @@ public abstract class DrEditServlet extends HttpServlet {
 		sendError(resp, e.getStatusCode(), e.getLocalizedMessage());
 	}
 
-	/**
-	 * Redirects to OAuth2 consent page if user is not logged in.
-	 * 
-	 * @param req
-	 *            Request object.
-	 * @param resp
-	 *            Response object.
-	 * @param stateParam 
-	 */
-	protected void login(HttpServletRequest req,
-			HttpServletResponse resp, String state) {
-		try {
-			resp.sendRedirect(credentialManager.getAuthorizationUrl(state));
-		} catch (IOException e) {
-			throw new RuntimeException("Can't redirect to auth page");
-		}
-	}
-
-  /**
-   * If OAuth2 redirect callback is invoked and there is a code query param,
-   * retrieve user credentials and profile. Then, redirect to the home page.
-   * @param req   Request object.
-   * @param resp  Response object.
-   * @throws IOException
-   */
-	protected void handleCallback(HttpServletRequest req,
-			HttpServletResponse resp) throws IOException {
-		String code = req.getParameter("code");
-		// retrieve new credentials with code
-		Credential credential = credentialManager.retrieve(code);
-		// request userinfo
-		Oauth2 service = getOauth2Service(credential);
-		try {
-			Userinfo about = service.userinfo().get().execute();
-			String id = about.getId();
-			credentialManager.save(id, credential);
-			req.getSession().setAttribute(KEY_SESSION_USERID, id);
-		} catch (IOException e) {
-			throw new RuntimeException("Can't handle the OAuth2 callback, "
-					+ "make sure that code is valid.");
-		}
-	}
-
-  /**
-   * Returns the credentials of the user in the session. If user is not in the
-   * session, returns null.
-   * @param req   Request object.
-   * @param resp  Response object.
-   * @return      Credential object of the user in session or null.
-   */
-  protected Credential getCredential(HttpServletRequest req,
-      HttpServletResponse resp) {
-    String userId = getUserId(req);
-    if (userId != null) {
-      return credentialManager.get(userId);
-    }
-    return null;
-  }
-
-	protected String getUserId(HttpServletRequest req) {
-		return (String) req.getSession().getAttribute(KEY_SESSION_USERID);
-	}
-
-  /**
-   * Deletes the credentials of the user in the session permanently and removes
-   * the user from the session.
-   * @param req   Request object.
-   * @param resp  Response object.
-   */
-  protected void deleteCredential(HttpServletRequest req,
-      HttpServletResponse resp) {
-    String userId = getUserId(req);
-    if (userId != null) {
-      credentialManager.delete(userId);
-      req.getSession().removeAttribute(KEY_SESSION_USERID);
-    }
-  }
-
   /**
    * Build and return a Drive service object based on given request parameters.
    * @param credential User credentials.
@@ -207,7 +127,7 @@ public abstract class DrEditServlet extends HttpServlet {
    *         there was a problem.
    */
   protected Drive getDriveService(Credential credential) {
-    return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential)
+    return new Drive.Builder(TRANSPORT, jsonFactory, credential)
     	.setApplicationName("Drive DigiDoc").build();
   }
 
@@ -218,7 +138,7 @@ public abstract class DrEditServlet extends HttpServlet {
    *         there was a problem.
    */
   protected Oauth2 getOauth2Service(Credential credential) {
-    return new Oauth2.Builder(TRANSPORT, JSON_FACTORY, credential)
+    return new Oauth2.Builder(TRANSPORT, jsonFactory, credential)
     	.setApplicationName("Drive DigiDoc").build();
   }
 }

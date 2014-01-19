@@ -15,6 +15,7 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.model.File;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.drive.samples.dredit.DrEditServlet;
@@ -31,9 +32,11 @@ public class IdSignServlet extends DrEditServlet {
 	private GDriveService gDriveService;
 	SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = 
 			SignatureContainerDescriptionRepository.getInstance();
+
 	
 	@Inject
-	public IdSignServlet(DigiDocService digiDocService, GDriveService gDriveService) {
+	public IdSignServlet(DigiDocService digiDocService, GDriveService gDriveService, JsonFactory jsonFactory) {
+		super(jsonFactory);
 		this.digiDocService = digiDocService;
 		this.gDriveService = gDriveService;
 	}
@@ -44,7 +47,7 @@ public class IdSignServlet extends DrEditServlet {
 		
 		String fileId = req.getParameter("file_id");
 		
-		Credential credential = getCredential(req, resp);
+		Credential credential = getCredential();
 		
 		if (fileId == null) {
 			sendError(resp, 400, "The `file_id` URI parameter must be specified.");
@@ -88,7 +91,7 @@ public class IdSignServlet extends DrEditServlet {
 				// The user has revoked our token or it is otherwise bad.
 				// Delete the local copy so that their next page load will
 				// recover.
-				deleteCredential(req, resp);
+//				deleteCredential(req, resp);
 
 			}
 
@@ -97,7 +100,7 @@ public class IdSignServlet extends DrEditServlet {
 	}
 
 	private DigidocOCSPSignatureContainer getOCSPSignatureContainer(
-			HttpServletRequest req) throws IOException {
+			HttpServletRequest req) throws IOException, ServletException {
 		
 		SignatureContainerDescription description = 
 				signatureContainerDescriptionRepository.get(getUserId(req));
