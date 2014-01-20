@@ -7,7 +7,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.CredentialRepository;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.ServerNameRepository;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.OAuthSecretsService;
 import com.google.api.client.auth.oauth2.Credential;
@@ -24,7 +23,6 @@ public class CredentialManager {
 
 	private HttpTransport transport;
 	private JsonFactory jsonFactory;
-	private CredentialRepository credentialRepository;
 	private OAuthSecrets oAuthSecrets;
 	private ServerNameRepository serverNameRepository;
 
@@ -40,11 +38,10 @@ public class CredentialManager {
 			);
 
 	@Inject
-	public CredentialManager(CredentialRepository credentialRepository,
+	public CredentialManager(
 			HttpTransport transport, JsonFactory jsonFactory,
 			OAuthSecretsService oAuthSecretsService,
 			ServerNameRepository serverNameRepository) {
-		this.credentialRepository = credentialRepository;
 		this.transport = transport;
 		this.jsonFactory = jsonFactory;
 		this.serverNameRepository = serverNameRepository;
@@ -58,18 +55,6 @@ public class CredentialManager {
 						oAuthSecrets.getClientSecrets())
 				.setTransport(transport)
 				.setJsonFactory(jsonFactory).build();
-	}
-
-	public Credential get(String userId) {
-		return credentialRepository.get(userId);
-	}
-
-	public void save(String userId, Credential credential) {
-		credentialRepository.save(userId, credential);
-	}
-
-	public void delete(String userId) {
-		credentialRepository.delete(userId);
 	}
 
 	public String getAuthorizationUrl(String state) {
