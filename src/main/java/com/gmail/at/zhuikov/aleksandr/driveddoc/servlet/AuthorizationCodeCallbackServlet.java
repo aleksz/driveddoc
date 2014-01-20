@@ -55,6 +55,8 @@ public class AuthorizationCodeCallbackServlet extends
 				jsonFactory, "610309933249.apps.googleusercontent.com",
 				"YDq0zPizR0rJANUBlgbzlb_4",
 				CredentialManager.SCOPES)
-				.setCredentialStore(new AppEngineCredentialStore()).build();
+				.setCredentialStore(new AppEngineCredentialStore())
+				.setAccessType("offline")
+				.build();
 	}
 }

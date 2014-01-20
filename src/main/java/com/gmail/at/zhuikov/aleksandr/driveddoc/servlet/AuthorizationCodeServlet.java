@@ -40,9 +40,10 @@ public abstract class AuthorizationCodeServlet extends AbstractAppEngineAuthoriz
 	protected AuthorizationCodeFlow initializeFlow() throws IOException {
 		return new GoogleAuthorizationCodeFlow.Builder(new UrlFetchTransport(),
 				jsonFactory, "610309933249.apps.googleusercontent.com",
-				"YDq0zPizR0rJANUBlgbzlb_4",
-				CredentialManager.SCOPES)
-				.setCredentialStore(new AppEngineCredentialStore()).build();
+				"YDq0zPizR0rJANUBlgbzlb_4", CredentialManager.SCOPES)
+				.setCredentialStore(new AppEngineCredentialStore())
+				.setAccessType("offline")
+				.build();
 	}
 	
 	@Override
