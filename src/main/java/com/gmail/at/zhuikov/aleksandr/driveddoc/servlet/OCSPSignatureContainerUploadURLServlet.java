@@ -33,7 +33,7 @@ public class OCSPSignatureContainerUploadURLServlet extends DrEditServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		String url = blobstoreService.createUploadUrl("/OCSPSignatureContainer");
+		String url = blobstoreService.createUploadUrl("/api/OCSPSignatureContainer");
 		
 		if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Development) {
 			url = url.replaceFirst("http://", "https://").replaceFirst("8888", "8443");
