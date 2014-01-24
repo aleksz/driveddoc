@@ -16,6 +16,8 @@ package com.google.drive.samples.dredit;
 
 import static java.util.Arrays.asList;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +27,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import sun.awt.image.ByteArrayImageSource;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientSignature;
@@ -136,18 +140,26 @@ public class FileServlet extends DrEditServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
-    Drive service = getDriveService(getCredential());
-    ClientFile clientFile = new ClientFile(req.getReader());
-    File file = clientFile.toFile();
+	  
+	  String fileId = req.getParameter("fileId");
 
-    if (!clientFile.content.equals("")) {
-      file = service.files().insert(file,
-          ByteArrayContent.fromString(clientFile.mimeType, clientFile.content))
-          .execute();
-    } else {
-      file = service.files().insert(file).execute();
-    }
-    sendJson(resp, file.getId());
+	  File file = gDriveService.getFile(fileId, getCredential());
+	  
+	  SignedDoc container = digiDocService.createContainer(
+			  file.getTitle(),
+			  file.getMimeType(), 
+			  gDriveService.downloadContent(file, getCredential()));
+	  
+	  File containerFile = new File();
+	  containerFile.setTitle(file.getTitle() + ".ddoc");
+	  containerFile.setMimeType("application/ddoc");
+	  containerFile.setParents(file.getParents());
+		
+	  ByteArrayOutputStream os = new ByteArrayOutputStream();
+	  container.writeToStream(os);
+	  
+	  gDriveService.insertFile(file, new ByteArrayInputStream(os.toByteArray()), getCredential());
+
   }
 
   /**

@@ -10,6 +10,7 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
@@ -48,7 +49,7 @@ public class GDriveService {
 		return downloadContent(getDriveService(credential), file);
 	}
 	
-	public InputStream downloadContent(Drive drive, File file) throws IOException {
+	private InputStream downloadContent(Drive drive, File file) throws IOException {
 		return drive.getRequestFactory().buildGetRequest(
 				new GenericUrl(file.getDownloadUrl())).execute().getContent();
 	}
@@ -58,5 +59,12 @@ public class GDriveService {
 				file.getId(), 
 				file, 
 				new ByteArrayContent(file.getMimeType(), content)).execute();
+	}
+	
+	public void insertFile(File file,  InputStream content, Credential credential) throws IOException {
+		getDriveService(credential)
+			.files()
+			.insert(file, new InputStreamContent(file.getMimeType(), content))
+			.execute();
 	}
 }

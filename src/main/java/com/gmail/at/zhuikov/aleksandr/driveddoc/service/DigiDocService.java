@@ -14,6 +14,7 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContai
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignSession;
 
+import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.Signature;
 import ee.sk.digidoc.SignedDoc;
@@ -102,5 +103,26 @@ public class DigiDocService {
 			String signatureValue, DigidocOCSPSignatureContainer signatureContainer) {
 		FlexibleBouncyCastleNotaryFactory.ocspSignCert.set(signatureContainer);
 		finalizeSignature(signedDoc, signatureId, signatureValue);
+	}
+
+	public SignedDoc createContainer(String fileName, String mimeType, InputStream content) {
+		SignedDoc signedDoc = new SignedDoc();
+		
+		try {
+			DataFile dataFile = new DataFile(
+					signedDoc.getNewDataFileId(), 
+					DataFile.CONTENT_EMBEDDED_BASE64, 
+					fileName, 
+					mimeType, 
+					signedDoc);
+			
+			dataFile.setBodyFromStream(content);
+			signedDoc.addDataFile(dataFile);
+
+		} catch (DigiDocException e) {
+			throw new RuntimeException(e);
+		}
+	
+		return signedDoc;
 	}
 }
