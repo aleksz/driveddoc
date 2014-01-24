@@ -6,7 +6,10 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.security.cert.CertificateException;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class SignatureContainerService {
 
@@ -33,6 +36,7 @@ public class SignatureContainerService {
 
 	private KeyStore getKeyStoreInstance() {
 		try {
+			Security.addProvider(new BouncyCastleProvider());
 			return KeyStore.getInstance("PKCS12", "BC");
 		} catch (KeyStoreException | NoSuchProviderException e) {
 			throw new RuntimeException(e);
