@@ -61,8 +61,8 @@ public class GDriveService {
 				new ByteArrayContent(file.getMimeType(), content)).execute();
 	}
 	
-	public void insertFile(File file,  InputStream content, Credential credential) throws IOException {
-		getDriveService(credential)
+	public File insertFile(File file,  InputStream content, Credential credential) throws IOException {
+		return getDriveService(credential)
 			.files()
 			.insert(file, new InputStreamContent(file.getMimeType(), content))
 			.execute();

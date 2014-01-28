@@ -77,25 +77,35 @@ module.factory('editor', function (doc, backend, $q, $rootScope, $log) {
             },
             load:function (id, reload) {
                 $log.info("Loading resource", id, doc.resource_id);
+                
                 if (!reload && doc.info && id == doc.resource_id) {
                     return $q.when(doc.info);
                 }
+                
                 this.loading = true;
-                return backend.load(id).then(angular.bind(this,
-                    function (result) {
-                        this.loading = false;
-                        this.updateEditor(result.data);
+                
+                return backend.load(id).then(angular.bind(this, function (result) {
+                        return result;
+                    }), function (errorResponse) {
+
+                    	if (errorResponse.status == 415) {
+                    		$log.info("Requested resource was not a DDoc, trying to create new DDoc with requested file inside");
+                    		return backend.create(id);
+                    	}
+
+                    	return errorResponse;
+                    	
+                    }).then(angular.bind(this, function(result) {
+                        this.updateEditor(result);
                         $rootScope.$broadcast('loaded', doc.info);
                         return result;
-                    }), angular.bind(this,
-                    function (result) {
-                        $log.warn("Error loading", result);
-                        this.loading = false;
+                    }), function(errorResponse) {
+                    	$log.warn("Error loading", errorResponse);
                         $rootScope.$broadcast('error', {
-                            action:'load',
                             message:"An error occured while loading the file"
                         });
-                        return result;
+                    }).finally(angular.bind(this, function() {
+                    	this.loading = false;
                     }));
             },
 //            save:function (newRevision) {
@@ -157,7 +167,10 @@ module.factory('editor', function (doc, backend, $q, $rootScope, $log) {
     });
 
 module.factory('backend',
-    function ($http, $log) {
+    function ($http, $log, $resource) {
+	
+		var fileResource = $resource('/api/svc');
+	
         var jsonTransform = function (data, headers) {
             return angular.fromJson(data);
         };
@@ -168,14 +181,12 @@ module.factory('backend',
 //            about:function () {
 //                return $http.get('/about', {transformResponse:jsonTransform});
 //            },
-            load:function (id) {
-                return $http.get('/api/svc', {
-//                    transformResponse:jsonTransform,
-                    params:{
-                        'file_id':id
-                    }
-                });
+            load: function(id) {
+            	return fileResource.get({ 'file_id':id }).$promise;
             },
+            create: function(originalFile) {
+            	return fileResource.save({ 'file_id': originalFile }).$promise;
+            }, 
             save:function (fileInfo, newRevision) {
                 $log.info('Saving', fileInfo);
                 return $http({

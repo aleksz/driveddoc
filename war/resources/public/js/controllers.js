@@ -10,11 +10,13 @@ function UserCtrl($scope, backend) {
     $scope.login();
 }
 
-function EditorCtrl($scope, $routeParams, editor, doc, $modal) {
-    console.log($routeParams);
+function EditorCtrl($scope, $routeParams, editor, doc, $modal, $log) {
+    $log.info($routeParams);
+    
     $scope.editor = editor;
     $scope.doc = doc;
-    editor.load($routeParams.id);
+    
+	editor.load($routeParams.id);
     
     $scope.openSignDialog = function() {
     	var dialog = $modal.open({

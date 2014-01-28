@@ -19,16 +19,18 @@ import static java.util.Arrays.asList;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import sun.awt.image.ByteArrayImageSource;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientSignature;
@@ -45,7 +47,8 @@ import com.google.api.services.drive.model.App;
 import com.google.api.services.drive.model.App.Icons;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.ParentReference;
-import com.google.drive.samples.dredit.model.ClientFile;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;
@@ -70,15 +73,10 @@ public class FileServlet extends DrEditServlet {
 		this.digiDocService = digiDocService;
 	}
 	
-  /**
-   * Given a {@code file_id} URI parameter, return a JSON representation
-   * of the given file.
-   */
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException {
 	  
-    Credential credential = getCredential();
     String fileId = req.getParameter("file_id");
 
     if (fileId == null) {
@@ -88,11 +86,11 @@ public class FileServlet extends DrEditServlet {
     
     try {
     	
-		File file = gDriveService.getFile(fileId, credential);
+		File file = gDriveService.getFile(fileId, getCredential());
 		String containerFileIndex = req.getParameter("index");
 		
 		if (containerFileIndex == null) {
-			ClientContainer fileContent = downloadFileContent(credential, file);
+			ClientContainer fileContent = downloadFileContent(getCredential(), file);
 			
 			if (fileContent == null) {
 				sendError(resp, 400, "Could not read file");
@@ -101,7 +99,7 @@ public class FileServlet extends DrEditServlet {
 			}
 			
 		} else {
-			download(resp, credential, file, containerFileIndex);
+			download(resp, getCredential(), file, containerFileIndex);
 		}
 	  
     } catch (GoogleJsonResponseException e) {
@@ -111,16 +109,35 @@ public class FileServlet extends DrEditServlet {
 //        deleteCredential(req, resp);
         
       }
-      
       sendGoogleJsonResponseError(resp, e);
+    } catch (IllegalArgumentException e) {
+  	  sendError(resp, 415, "Requested file is not DDoc");
     }
   }
+  
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		
+		Map<String, String> params = new Gson().fromJson(req.getReader(), new TypeToken<HashMap<String, String>>() {}.getType());
+
+		String fileId = params.get("file_id");
+
+		if (fileId == null) {
+			sendError(resp, 400, "The `file_id` URI parameter must be specified.");
+			return;
+		}
+
+		File file = gDriveService.getFile(fileId, getCredential());
+		sendJson(resp, createNewDDocWithFile(file, gDriveService.downloadContent(file, getCredential())));
+	}
 
 	private void download(HttpServletResponse resp, Credential credential, File file,
 			String containerFileIndex) throws IOException {
 		
 		SignedDoc signedDoc = digiDocService.parseSignedDoc(
-				gDriveService.downloadContent(file, credential));
+					gDriveService.downloadContent(file, credential));
+		
 		DataFile dataFile = signedDoc.getDataFile(new Integer(containerFileIndex));
 		
 		resp.setContentType("application/x-download");
@@ -133,78 +150,45 @@ public class FileServlet extends DrEditServlet {
 		}
 	}
 
-  /**
-   * Create a new file given a JSON representation, and return the JSON
-   * representation of the created file.
-   */
-  @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
-	  
-	  String fileId = req.getParameter("fileId");
+	private ClientContainer createNewDDocWithFile(File file, InputStream content) throws IOException {
+		SignedDoc container = digiDocService.createContainer(file.getTitle(),
+				file.getMimeType(),
+				gDriveService.downloadContent(file, getCredential()));
 
-	  File file = gDriveService.getFile(fileId, getCredential());
-	  
-	  SignedDoc container = digiDocService.createContainer(
-			  file.getTitle(),
-			  file.getMimeType(), 
-			  gDriveService.downloadContent(file, getCredential()));
-	  
-	  File containerFile = new File();
-	  containerFile.setTitle(file.getTitle() + ".ddoc");
-	  containerFile.setMimeType("application/ddoc");
-	  containerFile.setParents(file.getParents());
+		File containerFile = new File();
+		containerFile.setTitle(file.getTitle() + ".ddoc");
+		containerFile.setMimeType("application/ddoc");
+		containerFile.setParents(file.getParents());
+
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			container.writeToStream(os);
+		} catch (DigiDocException e) {
+			throw new RuntimeException(e);
+		}
+
+		containerFile = gDriveService.insertFile(containerFile, 	new ByteArrayInputStream(os.toByteArray()), getCredential());
 		
-	  ByteArrayOutputStream os = new ByteArrayOutputStream();
-	  container.writeToStream(os);
-	  
-	  gDriveService.insertFile(file, new ByteArrayInputStream(os.toByteArray()), getCredential());
+		ClientContainer clientContainer = new ClientContainer();
+		clientContainer.title = containerFile.getTitle();
+		clientContainer.id = containerFile.getId();
+		
+		extractFiles(container, clientContainer);
+		
+		return clientContainer;
+	}
 
-  }
-
-  /**
-   * Update a file given a JSON representation, and return the JSON
-   * representation of the created file.
-   */
-  @Override
-  public void doPut(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
-    boolean newRevision = req.getParameter("newRevision").equals(Boolean.TRUE);
-    Drive service = getDriveService(getCredential());
-    ClientFile clientFile = new ClientFile(req.getReader());
-    File file = clientFile.toFile();
-    // If there is content we update the given file
-    if (clientFile.content != null) {
-      file = service.files().update(clientFile.resource_id, file,
-          ByteArrayContent.fromString(clientFile.mimeType, clientFile.content))
-          .setNewRevision(newRevision).execute();
-    } else { // If there is no content we patch the metadata only
-      file = service.files()
-          .patch(clientFile.resource_id, file)
-          .setNewRevision(newRevision)
-          .execute();
-    }
-    sendJson(resp, file.getId());
-  }
-
-  /**
-   * Download the content of the given file.
-   *
-   * @param service Drive service to use for downloading.
-   * @param file File metadata object whose content to download.
-   * @return String representation of file content.  String is returned here
-   *         because this app is setup for text/plain files.
-   * @throws IOException Thrown if the request fails for whatever reason.
-   */
 	private ClientContainer downloadFileContent(Credential credential, File file)
 			throws IOException {
 
+		InputStream content = gDriveService.downloadContent(file, credential);
+		return  readExistingDDoc(file, digiDocService.parseSignedDoc(content));
+	}
+
+	private ClientContainer readExistingDDoc(File file, SignedDoc signedDoc) {
 		ClientContainer container = new ClientContainer();
 		container.title = file.getTitle();
 		container.id = file.getId();
-		
-		SignedDoc signedDoc = digiDocService.parseSignedDoc(
-				gDriveService.downloadContent(file, credential));
 		
 		if (signedDoc == null) {
 			return null;
@@ -212,26 +196,18 @@ public class FileServlet extends DrEditServlet {
 		
 		addSignatures(container, signedDoc);
 
+		extractFiles(signedDoc, container);
+		return container;
+	}
+
+	private void extractFiles(SignedDoc signedDoc, ClientContainer container) {
 		for (Object dataFileObject : signedDoc.getDataFiles()) {
 			DataFile dataFile = (DataFile) dataFileObject;
 			
-//			File tmpFile = insertFile(drive, dataFile);
 			FileInContainer fileInContainer = new FileInContainer();
 			fileInContainer.title = dataFile.getFileName();
-//			fileInContainer.iconLink = tmpFile.getIconLink();
-			
-//			for (Map.Entry<String, String> link : tmpFile.getOpenWithLinks().entrySet()) {
-//				App app = getApp(drive, link.getKey());
-//				fileInContainer.apps.add(new ClientApp(
-//						app.getName(), 
-//						getIcon(app).getIconUrl(),
-//						link.getValue()));
-//			}
-			
 			container.files.add(fileInContainer);
 		}
-
-		return container;
 	}
 
 	private void addSignatures(ClientContainer container, SignedDoc signedDoc) {

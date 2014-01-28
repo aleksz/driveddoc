@@ -7,7 +7,7 @@ var EditorState = {
 
 google.load('picker', '1');
 
-angular.module('app', ['app.services', 'app.directives', 'ngRoute', 'ui.bootstrap']).config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
+angular.module('app', ['app.services', 'app.directives', 'ngRoute', 'ui.bootstrap', 'ngResource']).config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
 
 	$routeProvider.when('/edit/:id', {
 		templateUrl: '/public/partials/editor.html',
@@ -20,7 +20,11 @@ angular.module('app', ['app.services', 'app.directives', 'ngRoute', 'ui.bootstra
 			return promise.then(function(response) {
 				return response;
 			}, function(response) {
-				$rootScope.$broadcast('error', { message: response.data });
+				
+				if (response.status == 400) {
+					$rootScope.$broadcast('error', { message: response.data });
+				}
+				
 				return $q.reject(response);
 			});
 		}

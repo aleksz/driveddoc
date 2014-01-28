@@ -5,10 +5,14 @@ import static ee.sk.digidoc.SignedDoc.hex2bin;
 import static ee.sk.digidoc.SignedDoc.readCertificate;
 import static ee.sk.digidoc.factory.DigiDocServiceFactory.STAT_OUTSTANDING_TRANSACTION;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
 import javax.inject.Singleton;
+
+import org.apache.commons.compress.utils.IOUtils;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
@@ -19,6 +23,7 @@ import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.Signature;
 import ee.sk.digidoc.SignedDoc;
 import ee.sk.digidoc.factory.DigiDocFactory;
+import ee.sk.digidoc.factory.DigiDocGenFactory;
 import ee.sk.digidoc.factory.DigiDocServiceFactory;
 import ee.sk.utils.ConfigManager;
 
@@ -31,14 +36,25 @@ public class DigiDocService {
 		ConfigManager.init("jar://jdigidoc.cfg");
 	}
 	
-	public SignedDoc parseSignedDoc(InputStream content) {
+	/**
+	 * @throws IllegalArgumentException if content is not DDoc
+	 * @param content
+	 * @return
+	 */
+	public SignedDoc parseSignedDoc(InputStream content)  {
+		DigiDocFactory factory;
+		
 		try {
-			DigiDocFactory factory = ConfigManager.instance().getDigiDocFactory();
-			SignedDoc doc = factory.readDigiDocFromStream(content);
-			return doc;
+			factory = ConfigManager.instance().getDigiDocFactory();
 		} catch (DigiDocException e) {
-			LOG.warning("Could not parse file: " + e.getMessage());
-			return null;
+			throw new RuntimeException(e);
+		}
+		
+		try {
+			return factory.readDigiDocFromStream(content);
+		} catch (DigiDocException e) {
+			LOG.fine("File is not a DigiDoc because of " + e);
+			throw new IllegalArgumentException("This is not a DDoc");
 		}
 	}
 	
@@ -106,9 +122,11 @@ public class DigiDocService {
 	}
 
 	public SignedDoc createContainer(String fileName, String mimeType, InputStream content) {
-		SignedDoc signedDoc = new SignedDoc();
-		
+
 		try {
+			SignedDoc signedDoc = DigiDocGenFactory.createSignedDoc(
+					SignedDoc.FORMAT_DIGIDOC_XML, null, null);
+			
 			DataFile dataFile = new DataFile(
 					signedDoc.getNewDataFileId(), 
 					DataFile.CONTENT_EMBEDDED_BASE64, 
@@ -116,13 +134,14 @@ public class DigiDocService {
 					mimeType, 
 					signedDoc);
 			
-			dataFile.setBodyFromStream(content);
+			byte[] contentBytes = IOUtils.toByteArray(content);
+			dataFile.setBase64Body(contentBytes);
+			dataFile.calcHashes(new ByteArrayInputStream(contentBytes));//hack to make DigiDoc save file content
 			signedDoc.addDataFile(dataFile);
+			return signedDoc;
 
-		} catch (DigiDocException e) {
+		} catch (DigiDocException | IOException e) {
 			throw new RuntimeException(e);
 		}
-	
-		return signedDoc;
 	}
 }

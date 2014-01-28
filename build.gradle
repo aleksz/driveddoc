@@ -50,6 +50,7 @@ repositories {
 dependencies { 
 
 	testCompile 'junit:junit:4.11'
+	testCompile 'org.mockito:mockito-all:1.9.5'
 
 	//appengineSdk 'com.google.appengine:appengine-java-sdk:1.8.6'
     runtime 'com.google.appengine:appengine-api-1.0-sdk:1.8.8'
@@ -64,7 +65,7 @@ dependencies {
 	runtime 'log4j:log4j:1.2.17'
 
 	//jdigidoc	
-    compile fileTree(dir: 'local-lib', includes: ['*.jar']) 
+    compile fileTree(dir: 'local-lib') 
 	runtime 'org.apache.commons:commons-compress:1.6'
 	runtime 'commons-codec:commons-codec:1.9'
 	runtime 'org.bouncycastle:bcprov-jdk15on:1.50'
