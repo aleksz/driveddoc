@@ -19,7 +19,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.AuthorizationCodeServlet;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.AuthorizationServlet;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -37,7 +37,7 @@ import com.google.gson.Gson;
  * @author jbd@google.com (Burcu Dogan)
  */
 @SuppressWarnings("serial")
-public abstract class DrEditServlet extends AuthorizationCodeServlet {
+public abstract class DrEditServlet extends AuthorizationServlet {
 	
 	
 	public DrEditServlet(JsonFactory jsonFactory) {

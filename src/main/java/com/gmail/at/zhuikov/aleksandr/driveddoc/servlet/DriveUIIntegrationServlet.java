@@ -10,14 +10,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.client.json.JsonFactory;
 import com.google.drive.samples.dredit.model.State;
+import com.google.gson.Gson;
 
 @Singleton
-public class DDocServlet extends AuthorizationCodeServlet {
+public class DriveUIIntegrationServlet extends DriveUIAuthorizationServlet {
 
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	public DDocServlet(JsonFactory jsonFactory) {
+	public DriveUIIntegrationServlet(JsonFactory jsonFactory) {
 		super(jsonFactory);
 	}
 	
@@ -25,20 +26,13 @@ public class DDocServlet extends AuthorizationCodeServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		String stateParam = req.getParameter("state");
+		State state = new Gson().fromJson( req.getParameter("state"), State.class);
 		
-		if (stateParam != null) {
-
-			State state = new State(stateParam);
+		if (state.ids != null && state.ids.size() > 0) {
+			resp.sendRedirect("/#/edit/" + state.ids.toArray()[0]);
 			
-			if (state.ids != null && state.ids.size() > 0) {
-				resp.sendRedirect("/#/edit/" + state.ids.toArray()[0]);
-				
-			} else if (state.folderId != null) {
-				resp.sendRedirect("/#/create/" + state.folderId);
-			}
-		} 
-		
-		req.getRequestDispatcher("/public/index.html").forward(req, resp);
+		} else if (state.folderId != null) {
+			resp.sendRedirect("/#/create/" + state.folderId);
+		}
 	}
 }

@@ -11,17 +11,17 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.appengine.auth.oauth2.AbstractAppEngineAuthorizationCodeCallbackServlet;
 import com.google.api.client.extensions.appengine.auth.oauth2.AppEngineCredentialStore;
 import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
+import com.google.api.client.extensions.servlet.auth.oauth2.AbstractAuthorizationCodeCallbackServlet;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.json.JsonFactory;
 import com.google.drive.samples.dredit.CredentialManager;
 
 @Singleton
-public class AuthorizationCodeCallbackServlet extends
-		AbstractAppEngineAuthorizationCodeCallbackServlet {
+public class AuthorizationCallbackServlet extends
+		AbstractAuthorizationCodeCallbackServlet {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -31,7 +31,7 @@ public class AuthorizationCodeCallbackServlet extends
 	@Override
 	protected void onSuccess(HttpServletRequest req, HttpServletResponse resp,
 			Credential credential) throws ServletException, IOException {
-		req.getRequestDispatcher("/").forward(req, resp);
+		resp.sendRedirect("/?" + req.getQueryString());
 	}
 
 	@Override
@@ -58,5 +58,11 @@ public class AuthorizationCodeCallbackServlet extends
 				.setCredentialStore(new AppEngineCredentialStore())
 				.setAccessType("offline")
 				.build();
+	}
+
+	@Override
+	protected String getUserId(HttpServletRequest req) throws ServletException,
+			IOException {
+		return (String) req.getSession().getAttribute("me");
 	}
 }
