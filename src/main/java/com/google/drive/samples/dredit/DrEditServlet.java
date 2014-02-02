@@ -15,6 +15,7 @@
 package com.google.drive.samples.dredit;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +40,7 @@ import com.google.gson.Gson;
 @SuppressWarnings("serial")
 public abstract class DrEditServlet extends AuthorizationServlet {
 	
+	private static final Logger LOG = Logger.getLogger(DrEditServlet.class.getName());
 	
 	public DrEditServlet(JsonFactory jsonFactory) {
 		super(jsonFactory);
@@ -114,7 +116,7 @@ public abstract class DrEditServlet extends AuthorizationServlet {
 	 */
 	protected void sendGoogleJsonResponseError(HttpServletResponse resp,
 			GoogleJsonResponseException e) {
-		
+		LOG.warning("Google error: status " + e.getStatusCode() + " - " + e.getMessage());
 		resp.setContentType("application/json");
 		resp.setCharacterEncoding("utf-8");
 		sendError(resp, e.getStatusCode(), e.getLocalizedMessage());
