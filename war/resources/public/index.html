@@ -44,14 +44,20 @@
 		</div>
 
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
-			<ul class="nav navbar-nav navbar-right" ng-controller="UserCtrl">
-				<li class="dropdown">
-				<a href="" class="dropdown-toggle" data-toggle="dropdown">
-					{{user.email}} <b class="caret"></b>
-				</a>
-				<ul class="dropdown-menu">
-					<li><a href="{{user.link}}" target="_blank">Profile</a></li>
-				</ul></li>
+			<ul class="nav navbar-nav navbar-right">
+				<li>
+					<a href="https://chrome.google.com/webstore/detail/drive-digidoc/chpfdgfceliaajeaajkgalgfgpflpjdh/details?utm_source=chrome-ntp-icon" target="_blank">Give feedback</a>
+				</li>
+				<li class="dropdown" ng-controller="UserCtrl">
+					<a href="" class="dropdown-toggle" data-toggle="dropdown">
+						{{user.email}} <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="{{user.link}}" target="_blank">Profile</a>
+						</li>
+					</ul>
+				</li>
 			</ul>
 		</div>
 	</nav>
