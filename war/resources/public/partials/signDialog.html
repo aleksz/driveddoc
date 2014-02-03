@@ -73,12 +73,26 @@
 		<div class="modal-content" x-ng-show="step == 'ocspCert'">
 			<div class="modal-header">
 				<button type="button" class="close" x-ng-click="cancel()" x-aria-hidden="true">&times;</button>
-				<h4 class="modal-title">Upload your personal signature service access key</h4>
+				<h4 class="modal-title">Upload your personal validity service access certificate</h4>
 			</div>
 			<form class="form-horizontal" x-role="form" x-ng-submit="storeKey()">
 				<div class="modal-body">
+					<div class="alert alert-info">
+						<ul>
+							<li>
+								<a href="http://id.ee/index.php?id=34321" target="blank">
+									What is validity service access certificate?
+								</a>
+							</li>
+							<li>
+								<a href="https://www.sk.ee/getaccess/" target="blank">
+									Where do I get one?
+								</a>
+							</li>
+						</ul>
+					</div>
 	   				<div class="form-group">
-						<label for="ocspCertFile" class="col-lg-3 control-label">Access key</label>
+						<label for="ocspCertFile" class="col-lg-3 control-label">Certificate file (.p12d)</label>
 						<div class="col-lg-9">
 						    <file
 						    	id="ocspCertFile"
@@ -88,7 +102,7 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="ocspCertPass" class="col-lg-3 control-label">Password</label>
+						<label for="ocspCertPass" class="col-lg-3 control-label">Certificate password</label>
 						<div class="col-lg-9">
 							<input type="password" 
 								id="ocspCertPass"
@@ -97,10 +111,13 @@
 								x-ng-model="signatureContainer.pass"/>
 						</div>
 					</div>
+					<div class="alert alert-info">
+						For your convenience, certificate will be stored and you don't need to configure it on each signing.
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" x-ng-click="cancel()">Cancel</button>
-					<button type="submit" class="btn btn-primary">Save key and proceed with signing</button>
+					<button type="submit" class="btn btn-primary">Save certificate and proceed with signing</button>
 				</div>
 			</form>
 		</div>
