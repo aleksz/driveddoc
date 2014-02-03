@@ -1,5 +1,6 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc;
 
+import com.gmail.at.zhuikov.aleksandr.driveddoc.filter.AuthenticationFilter;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.filter.DriveUIAuthenticationFilter;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.filter.LegacyDriveUIIntegrationFilter;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.filter.ServerNameFilter;
@@ -45,6 +46,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 				filter("/*").through(ServerNameFilter.class);
 				filter("/").through(LegacyDriveUIIntegrationFilter.class);
 				filter("/driveui").through(DriveUIAuthenticationFilter.class);
+				filter("/*").through(AuthenticationFilter.class);
 				serve("/api/svc").with(FileServlet.class);
 				serve("/api/user").with(UserServlet.class);
 				serve("/api/about").with(AboutServlet.class);
