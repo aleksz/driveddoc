@@ -66,9 +66,9 @@ dependencies {
 
 	//jdigidoc	
     compile fileTree(dir: 'local-lib', includes: ['*.jar']) 
-	runtime 'org.apache.commons:commons-compress:1.6'
-	runtime 'commons-codec:commons-codec:1.9'
-	runtime 'org.bouncycastle:bcprov-jdk15on:1.50'
+	compile 'org.apache.commons:commons-compress:1.6'
+	compile 'commons-codec:commons-codec:1.9'
+	compile 'org.bouncycastle:bcprov-jdk15on:1.50'
 }
 
 task startFakeSSL {
