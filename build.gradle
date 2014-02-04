@@ -53,7 +53,7 @@ dependencies {
 	testCompile 'org.mockito:mockito-all:1.9.5'
 
 	//appengineSdk 'com.google.appengine:appengine-java-sdk:1.8.6'
-    runtime 'com.google.appengine:appengine-api-1.0-sdk:1.8.8'
+    compile 'com.google.appengine:appengine-api-1.0-sdk:1.8.8'
     compile 'com.google.api-client:google-api-client-gson:1.17.0-rc'
 	compile 'com.google.oauth-client:google-oauth-client-appengine:1.17.0-rc'
 	compile 'com.google.apis:google-api-services-drive:v2-rev110-1.17.0-rc'
