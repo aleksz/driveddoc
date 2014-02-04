@@ -1,1 +1,1 @@
-script: "gradlew test"
+script: "./gradlew test"
