@@ -4,14 +4,14 @@ var EditorState = {
     LOADING: 0,
     CLEAN: 1
 };
+//
+//google.load('picker', '1');
 
-google.load('picker', '1');
-
-angular.module('app', ['app.services', 'app.directives', 'ngRoute', 'ui.bootstrap', 'ngResource']).config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
+angular.module('app', ['app.services', 'app.directives', 'app.controllers', 'ngRoute', 'ui.bootstrap', 'ngResource']).config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
 
 	$routeProvider.when('/edit/:id', {
 		templateUrl: '/public/partials/editor.html',
-		controller: EditorCtrl
+		controller: 'EditorCtrl'
 	});
 
 	$httpProvider.responseInterceptors.push(function($q, $rootScope) {
