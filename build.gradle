@@ -53,7 +53,7 @@ dependencies {
 	testCompile 'org.mockito:mockito-all:1.9.5'
 
 	//appengineSdk 'com.google.appengine:appengine-java-sdk:1.8.6'
-    runtime 'com.google.appengine:appengine-api-1.0-sdk:1.8.8'
+    compile 'com.google.appengine:appengine-api-1.0-sdk:1.8.8'
     compile 'com.google.api-client:google-api-client-gson:1.17.0-rc'
 	compile 'com.google.oauth-client:google-oauth-client-appengine:1.17.0-rc'
 	compile 'com.google.apis:google-api-services-drive:v2-rev110-1.17.0-rc'
@@ -62,13 +62,13 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.2.4'
 	compile 'com.google.inject:guice:4.0-beta'
 	compile 'com.google.inject.extensions:guice-servlet:4.0-beta'
-	runtime 'log4j:log4j:1.2.17'
+	compile 'log4j:log4j:1.2.17'
 
 	//jdigidoc	
-    compile fileTree(dir: 'local-lib') 
-	runtime 'org.apache.commons:commons-compress:1.6'
-	runtime 'commons-codec:commons-codec:1.9'
-	runtime 'org.bouncycastle:bcprov-jdk15on:1.50'
+    compile fileTree(dir: 'local-lib', includes: ['*.jar']) 
+	compile 'org.apache.commons:commons-compress:1.6'
+	compile 'commons-codec:commons-codec:1.9'
+	compile 'org.bouncycastle:bcprov-jdk15on:1.50'
 }
 
 task startFakeSSL {
