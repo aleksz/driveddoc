@@ -11,7 +11,7 @@ import org.junit.Test;
 
 public class OCSPSignatureContainerServiceTest {
 
-	InputStream container = OCSPSignCertTest.class.getResourceAsStream("504950.p12d");
+	InputStream container = OCSPSignCertTest.class.getResourceAsStream("/504950.p12d");
 	SignatureContainerService service = new SignatureContainerService();
 	
 	@Before
