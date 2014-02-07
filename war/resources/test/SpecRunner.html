@@ -6,26 +6,28 @@
 
   <link rel="shortcut icon" type="image/png" href="lib/jasmine-2.0.0/jasmine_favicon.png">
   <link rel="stylesheet" type="text/css" href="lib/jasmine-2.0.0/jasmine.css">
+  
 
+<script type="text/javascript" src="lib/jasmine-2.0.0/console.js"></script>
   <script type="text/javascript" src="lib/jasmine-2.0.0/jasmine.js"></script>
   <script type="text/javascript" src="lib/jasmine-2.0.0/jasmine-html.js"></script>
   <script type="text/javascript" src="lib/jasmine-2.0.0/boot.js"></script>
   
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.min.js"></script>
   <script type="text/javascript" src="lib/angular/angular-mocks.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular-route.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular-resource.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.9.0/ui-bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.9.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular-route.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular-resource.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.9.0/ui-bootstrap.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.9.0/ui-bootstrap-tpls.min.js"></script>
 
   <!-- include source files here... -->
-      <script src="/public/lib/idCard.js"></script>
-    <script src="/public/js/app.js"></script>
-    <script src="/public/js/services.js"></script>
-    <script src="/public/js/controllers.js"></script>
-    <script src="/public/js/directives.js"></script>
+      <script src="../public/lib/idCard.js"></script>
+    <script src="../public/js/app.js"></script>
+    <script src="../public/js/services.js"></script>
+    <script src="../public/js/controllers.js"></script>
+    <script src="../public/js/directives.js"></script>
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="spec/SpecHelper.js"></script>
@@ -34,5 +36,11 @@
 </head>
 
 <body>
+  
+<script type="text/javascript">
+  if (typeof window.callPhantom === "function") {
+	  window.callPhantom("parse time");
+  }
+</script>
 </body>
 </html>
