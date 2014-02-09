@@ -23,8 +23,6 @@ module.controller('EditorCtrl', ['$scope', '$routeParams', 'editor', 'doc', '$mo
 
 	$scope.openSignDialog = function() {
 		
-		ga('send', 'event', 'button', 'click', 'sign dialog', 1);
-		
 		var dialog = $modal.open({
 			templateUrl : '/public/partials/signDialog.html',
 			controller : 'SignatureCtrl',
