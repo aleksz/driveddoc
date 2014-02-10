@@ -99,7 +99,7 @@ describe("SignatureCtrl", function() {
 	}));
 	
 	it("broadcast error message if certificate retrieval raises error", inject(function($rootScope) {
-		spyOn($rootScope, "$broadcast");
+		spyOn($rootScope, "$broadcast").and.callThrough();
 		idCard.getCertificate.and.returnValue(mockFailingPromise(new IdCardException(2, "errorMsg")));
 		scope.startIdCardSigning();
 		resolveMockPromises();
@@ -125,7 +125,7 @@ describe("SignatureCtrl", function() {
 	}));
 	
 	it("broadcast error message if pin retrieval raises error", inject(function($rootScope) {
-		spyOn($rootScope, "$broadcast");
+		spyOn($rootScope, "$broadcast").and.callThrough();
 		idCard.getCertificate.and.returnValue(mockPromise({ cert: "a", id: "1" }));
 		backend.prepareSignature.and.returnValue(mockPromise({ data: {}}));
 		idCard.sign.and.returnValue(mockFailingPromise(new IdCardException(2, "errorMsg")));

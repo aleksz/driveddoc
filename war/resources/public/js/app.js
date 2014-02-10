@@ -7,12 +7,22 @@ var EditorState = {
 //
 //google.load('picker', '1');
 
-angular.module('app', ['app.services', 'app.directives', 'app.controllers', 'ngRoute', 'ui.bootstrap', 'ngResource', 'angulartics', 'angulartics.google.analytics']).config(['$routeProvider', '$httpProvider', function ($routeProvider, $httpProvider) {
+angular.module('app', [
+                       'app.services', 
+                       'app.directives', 
+                       'app.controllers', 
+                       'ngRoute', 
+                       'ui.bootstrap', 
+                       'ngResource', 
+                       'angulartics.google.analytics'])
+                       .config(['$routeProvider', function ($routeProvider) {
 
 	$routeProvider.when('/edit/:id', {
 		templateUrl: '/public/partials/editor.html',
 		controller: 'EditorCtrl'
 	});
+
+}]).config(['$httpProvider', function ($httpProvider) {
 
 	$httpProvider.responseInterceptors.push(function($q, $rootScope) {
 		//TODO: upgrade Angular and use new API
@@ -30,4 +40,6 @@ angular.module('app', ['app.services', 'app.directives', 'app.controllers', 'ngR
 		}
 	});
 
+}]).config(['$analyticsProvider', function ($analyticsProvider) {
+	$analyticsProvider.virtualPageviews(false);
 }]);
