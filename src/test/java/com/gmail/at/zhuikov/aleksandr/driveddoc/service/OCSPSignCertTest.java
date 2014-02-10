@@ -18,7 +18,7 @@ import com.google.appengine.api.blobstore.BlobKey;
 
 public class OCSPSignCertTest {
 	
-	private InputStream inputStream = OCSPSignCertTest.class.getResourceAsStream("504950.p12d");
+	private InputStream inputStream = OCSPSignCertTest.class.getResourceAsStream("/504950.p12d");
 	private String password = "13hYdz8W";
 	private DigidocOCSPSignatureContainer ocspSignCert = new DigidocOCSPSignatureContainer(
 			inputStream,
@@ -27,6 +27,11 @@ public class OCSPSignCertTest {
 	@Before
 	public void initSecurityProvider() {
 		Security.addProvider(new BouncyCastleProvider());
+	}
+	
+	@Test
+	public void precondition() {
+		assertNotNull(inputStream);
 	}
 	
 	@Test

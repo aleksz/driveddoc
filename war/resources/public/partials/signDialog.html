@@ -8,10 +8,22 @@
 			</div>
 			<div class="modal-body text-center">
 				<!-- <button type="button" class="btn btn-primary btn-lg" x-ng-click="chooseMobileId()">Mobile ID</button> -->
-				<button type="button" class="btn btn-primary btn-lg" x-ng-click="chooseIdCard()">ID Card</button>
+				<button type="button" 
+						class="btn btn-primary btn-lg" 
+						x-ng-click="chooseIdCard()"
+						x-analytics-on="click"
+            			x-analytics-category="buttons"
+            			x-analytics-event="Choose ID card">ID Card</button>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" x-ng-click="cancel()">Cancel</button>
+				<button type="button" 
+						class="btn btn-default" 
+						x-ng-click="cancel()"
+						x-analytics-on="click"
+                		x-analytics-category="buttons"
+                		x-analytics-event="Cancel on choosing sign method">
+                	Cancel
+                </button>
 			</div>
 		</div>
 		<div class="modal-content" x-ng-show="step == 'mobileIdCredentials'">
@@ -80,12 +92,20 @@
 					<div class="alert alert-info">
 						<ul>
 							<li>
-								<a href="http://id.ee/index.php?id=34321" target="blank">
+								<a href="http://id.ee/index.php?id=34321" 
+										target="blank"
+										x-analytics-on="click"
+	                					x-analytics-category="buttons"
+	                					x-analytics-event="Validity service access cert info">
 									What is validity service access certificate?
 								</a>
 							</li>
 							<li>
-								<a href="https://www.sk.ee/getaccess/" target="blank">
+								<a href="https://www.sk.ee/getaccess/" 
+										target="blank"
+										x-analytics-on="click"
+	                					x-analytics-category="buttons"
+	                					x-analytics-event="Where do I get access cert">
 									Where do I get one?
 								</a>
 							</li>
@@ -116,8 +136,21 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" x-ng-click="cancel()">Cancel</button>
-					<button type="submit" class="btn btn-primary">Save certificate and proceed with signing</button>
+					<button type="button" 
+							class="btn btn-default" 
+							x-ng-click="cancel()"
+							x-analytics-on="click"
+	                		x-analytics-category="buttons"
+	                		x-analytics-event="Cancel on access cert">
+	                	Cancel
+	                </button>
+					<button type="submit" 
+							class="btn btn-primary"
+							x-analytics-on="click"
+	                		x-analytics-category="buttons"
+	                		x-analytics-event="Submit access cert">
+	                	Save certificate and proceed with signing
+	                </button>
 				</div>
 			</form>
 		</div>

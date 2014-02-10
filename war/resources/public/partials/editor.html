@@ -36,7 +36,12 @@
 	                        	</div>
 	                		</td>
 	                		<td align="right">
-	                			<a href="/api/svc?file_id={{doc.info.id}}&index={{$index}}" data-toggle="tooltip" title="Download">
+	                			<a href="/api/svc?file_id={{doc.info.id}}&index={{$index}}" 
+	                					data-toggle="tooltip" 
+	                					title="Download" 
+	                					analytics-on="click"
+	                					analytics-category="buttons"
+	                					analytics-event="Download">
 	                				<span class="glyphicon glyphicon-download"></span>
 	                			</a>
 	                		</td>
@@ -66,7 +71,14 @@
 			    		</tr>
 			    	</tbody>
 			   	</table>
-				<a data-toggle="modal" ng-click="openSignDialog()" class="btn btn-primary btn-lg">Sign</a>
+				<a data-toggle="modal" 
+						ng-click="openSignDialog()" 
+						class="btn btn-primary btn-lg"
+						analytics-on="click"
+						analytics-category="buttons"
+          				analytics-event="Open sign dialog">
+					Sign
+				</a>
 			</div>
 		</div>
 	</div>
