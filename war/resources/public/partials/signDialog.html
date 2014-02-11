@@ -87,7 +87,7 @@
 				<button type="button" class="close" x-ng-click="cancel()" x-aria-hidden="true">&times;</button>
 				<h4 class="modal-title">Upload your personal validity service access certificate</h4>
 			</div>
-			<form class="form-horizontal" x-role="form" x-ng-submit="storeKey()">
+			<form name="form" class="form-horizontal" x-role="form" x-ng-submit="storeKey()" novalidate>
 				<div class="modal-body">
 					<div class="alert alert-info">
 						<ul>
@@ -111,23 +111,25 @@
 							</li>
 						</ul>
 					</div>
-	   				<div class="form-group">
+	   				<div class="form-group" x-ng-class="{'has-error': form.ocspCertFile.$invalid}">
 						<label for="ocspCertFile" class="col-lg-3 control-label">Certificate file (.p12d)</label>
 						<div class="col-lg-9">
-						    <file
+						    <file 
 						    	id="ocspCertFile"
 						    	name="ocspCertFile"
+						    	x-ng-model="ocspCertFile"
 						    	accept="application/x-p12d"
-						    	required="required"/>
+						    	required/>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group" x-ng-class="{'has-error': form.ocspCertPass.$invalid}">
 						<label for="ocspCertPass" class="col-lg-3 control-label">Certificate password</label>
 						<div class="col-lg-9">
 							<input type="password" 
 								id="ocspCertPass"
+								name="ocspCertPass"
 								class="form-control" 
-								required="required"
+								required
 								x-ng-model="signatureContainer.pass"/>
 						</div>
 					</div>
@@ -146,6 +148,7 @@
 	                </button>
 					<button type="submit" 
 							class="btn btn-primary"
+							ng-disabled="form.$invalid"
 							x-analytics-on="click"
 	                		analytics-category="buttons"
 	                		x-analytics-event="Submit access cert">

@@ -6,13 +6,16 @@ module.directive('file', function($rootScope, $log) {
 	return {
 		restrict: 'E',
 		replace: true,
+		require:'ngModel',
 		template: '<input type="file"/>',
-		link: function($scope, element, attrs) {
+		link: function($scope, element, attrs, ngModel) {
 			element.bind('change', function(event){
                 var files = event.target.files;
                 var file = files[0];
                 $scope.$apply(function($scope) {
                 	$scope.$parent[attrs["id"]] = file;
+                	ngModel.$setViewValue(element.val());
+//                    ngModel.$render();
                 });
             });
 		}

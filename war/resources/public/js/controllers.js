@@ -100,7 +100,7 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 	}
 
 	$scope.form = {};
-	$scope.ocspCertFile = {};
+//	$scope.ocspCertFile = {};
 	$scope.signatureContainer = {};
 
 	$scope.storeKey = function() {
