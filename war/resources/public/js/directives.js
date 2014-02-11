@@ -12,10 +12,16 @@ module.directive('file', function($rootScope, $log) {
 			element.bind('change', function(event){
                 var files = event.target.files;
                 var file = files[0];
+
                 $scope.$apply(function($scope) {
-                	$scope.$parent[attrs["id"]] = file;
                 	ngModel.$setViewValue(element.val());
-//                    ngModel.$render();
+
+                	if (file.type != attrs["accept"]) {
+                		ngModel.$setValidity('accept', false);
+                	} else {
+                		ngModel.$setValidity('accept', true);
+                		$scope.$parent[attrs["id"]] = file;
+                	}
                 });
             });
 		}
