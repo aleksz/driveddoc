@@ -12,7 +12,7 @@
 						class="btn btn-primary btn-lg" 
 						x-ng-click="chooseIdCard()"
 						x-analytics-on="click"
-            			x-analytics-category="buttons"
+            			analytics-category="buttons"
             			x-analytics-event="Choose ID card">ID Card</button>
 			</div>
 			<div class="modal-footer">
@@ -20,7 +20,7 @@
 						class="btn btn-default" 
 						x-ng-click="cancel()"
 						x-analytics-on="click"
-                		x-analytics-category="buttons"
+                		analytics-category="buttons"
                 		x-analytics-event="Cancel on choosing sign method">
                 	Cancel
                 </button>
@@ -95,7 +95,7 @@
 								<a href="http://id.ee/index.php?id=34321" 
 										target="blank"
 										x-analytics-on="click"
-	                					x-analytics-category="buttons"
+	                					analytics-category="buttons"
 	                					x-analytics-event="Validity service access cert info">
 									What is validity service access certificate?
 								</a>
@@ -104,7 +104,7 @@
 								<a href="https://www.sk.ee/getaccess/" 
 										target="blank"
 										x-analytics-on="click"
-	                					x-analytics-category="buttons"
+	                					analytics-category="buttons"
 	                					x-analytics-event="Where do I get access cert">
 									Where do I get one?
 								</a>
@@ -140,14 +140,14 @@
 							class="btn btn-default" 
 							x-ng-click="cancel()"
 							x-analytics-on="click"
-	                		x-analytics-category="buttons"
+	                		analytics-category="buttons"
 	                		x-analytics-event="Cancel on access cert">
 	                	Cancel
 	                </button>
 					<button type="submit" 
 							class="btn btn-primary"
 							x-analytics-on="click"
-	                		x-analytics-category="buttons"
+	                		analytics-category="buttons"
 	                		x-analytics-event="Submit access cert">
 	                	Save certificate and proceed with signing
 	                </button>
