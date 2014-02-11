@@ -11,10 +11,26 @@ describe("SignatureCtrl", function() {
 	var modalInstance;
 	var editor;
 	
+	function mockPromise(result) {
+		var deferred = q.defer();
+		deferred.resolve(result)
+		return deferred.promise;
+	}
+	
+	function mockFailingPromise(result) {
+		var deferred = q.defer();
+		deferred.reject(result)
+		return deferred.promise;
+	}
+	
+	function resolveMockPromises() {
+		scope.$root.$digest();
+	}
+	
 	beforeEach(function() {
 		angular.mock.module('app')
 		idCard = jasmine.createSpyObj('idCard', [ 'getCertificate', 'sign' ]);
-		backend = jasmine.createSpyObj('backend', [ 'prepareSignature', 'finalizeSignature' ]);
+		backend = jasmine.createSpyObj('backend', [ 'prepareSignature', 'finalizeSignature', 'getOCSPUploadUrl', 'uploadOCSPKey' ]);
 		modalInstance = jasmine.createSpyObj('modalInstance', [ 'close', 'dismiss' ]);
 		editor = jasmine.createSpyObj('editor', [ 'load' ]);
 		doc = {	info: { id: 422 }};
@@ -33,24 +49,34 @@ describe("SignatureCtrl", function() {
         	});
     }));
   
+	describe("storeKey should", function() {
+
+		it("notify that storing is in progress", inject(function() {
+			backend.getOCSPUploadUrl.and.returnValue(mockPromise({}));
+			scope.storeKey();
+			expect(scope.storingKey).toEqual(true);
+		}));
+		
+		it("notify that storing is not in progress after successfull upload", inject(function() {
+			spyOn(scope, "startIdCardSigning");
+			backend.getOCSPUploadUrl.and.returnValue(mockPromise({}));
+			backend.uploadOCSPKey.and.returnValue(mockPromise({}));
+			scope.storeKey();
+			resolveMockPromises();
+			expect(scope.storingKey).toEqual(false);
+		}));
+		
+		it("notify that storing is not in progress after upload failure", inject(function() {
+			backend.getOCSPUploadUrl.and.returnValue(mockPromise({}));
+			backend.uploadOCSPKey.and.returnValue(mockFailingPromise({}));
+			scope.storeKey();
+			resolveMockPromises();
+			expect(scope.storingKey).toEqual(false);
+		}));
+	});
+	
   describe("startIdCardSigning should", function() {
   
-	function mockPromise(result) {
-		var deferred = q.defer();
-		deferred.resolve(result)
-		return deferred.promise;
-	}
-	
-	function mockFailingPromise(result) {
-		var deferred = q.defer();
-		deferred.reject(result)
-		return deferred.promise;
-	}
-	
-	function resolveMockPromises() {
-		scope.$root.$digest();
-	}
-	
 	it("change to id card signing step when signing starts", inject(function() {
 		idCard.getCertificate.and.returnValue(mockPromise());
 		scope.startIdCardSigning();
