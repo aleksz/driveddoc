@@ -138,6 +138,11 @@
 					</div>
 				</div>
 				<div class="modal-footer">
+					<div class="progress progress-striped active" x-ng-show="storingKey">
+						<div class="progress-bar" x-role="progressbar" style="width: 100%">
+							<span class="sr-only">In progress</span>
+						</div>
+					</div>
 					<button type="button" 
 							class="btn btn-default" 
 							x-ng-click="cancel()"

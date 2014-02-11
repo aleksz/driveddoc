@@ -100,11 +100,12 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 	}
 
 	$scope.form = {};
-//	$scope.ocspCertFile = {};
 	$scope.signatureContainer = {};
 
 	$scope.storeKey = function() {
 
+		$scope.storingKey = true;
+		
 		backend.getOCSPUploadUrl().then(function(response) {
 			$log.info("Uploading OCSP signature container " + response.data);
 			var formData = new FormData();
@@ -114,6 +115,8 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 		}).then(function() {
 			$log.info("OCSP signature container uploaded");
 			$scope.startIdCardSigning();
+		}).finally(function() {
+			$scope.storingKey = false;
 		});
 	}
 
