@@ -8,6 +8,7 @@ import static ee.sk.digidoc.factory.DigiDocServiceFactory.STAT_OUTSTANDING_TRANS
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.inject.Singleton;
@@ -17,6 +18,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignSession;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ValidatedSignedDoc;
 
 import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;
@@ -41,20 +43,22 @@ public class DigiDocService {
 	 * @param content
 	 * @return
 	 */
-	public SignedDoc parseSignedDoc(InputStream content)  {
-		DigiDocFactory factory;
+	public ValidatedSignedDoc parseSignedDoc(InputStream content)  {
 		
+		ArrayList<DigiDocException> warnings = new ArrayList<DigiDocException>();
+
 		try {
-			factory = ConfigManager.instance().getDigiDocFactory();
+			DigiDocFactory factory = ConfigManager.instance().getDigiDocFactory();
+			SignedDoc doc = factory.readSignedDocFromStreamOfType(content, false, warnings);
+			
+			if (doc == null) {
+				throw new IllegalArgumentException("content is not a DigiDoc");
+			}
+			
+			return new ValidatedSignedDoc(doc, warnings);
+			
 		} catch (DigiDocException e) {
 			throw new RuntimeException(e);
-		}
-		
-		try {
-			return factory.readDigiDocFromStream(content);
-		} catch (DigiDocException e) {
-			LOG.fine("File is not a DigiDoc because of " + e);
-			throw new IllegalArgumentException("This is not a DDoc");
 		}
 	}
 	

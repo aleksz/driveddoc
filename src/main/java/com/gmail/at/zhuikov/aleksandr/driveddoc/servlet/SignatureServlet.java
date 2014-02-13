@@ -63,7 +63,7 @@ public class SignatureServlet extends DrEditServlet {
 
 			File file = gDriveService.getFile(signatureRequest.fileId, credential);
 			InputStream content = gDriveService.downloadContent(file, credential);
-			SignedDoc signedDoc = digiDocService.parseSignedDoc(content);
+			SignedDoc signedDoc = digiDocService.parseSignedDoc(content).getSignedDoc();
 			req.getSession().setAttribute("ddoc", signedDoc);
 			IdSignSession signSession = digiDocService.prepareSignature(signedDoc, signatureRequest.cert);
 			sendJson(resp, signSession);

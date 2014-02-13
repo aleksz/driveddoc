@@ -136,7 +136,7 @@ public class FileServlet extends DrEditServlet {
 			String containerFileIndex) throws IOException {
 		
 		SignedDoc signedDoc = digiDocService.parseSignedDoc(
-					gDriveService.downloadContent(file, credential));
+					gDriveService.downloadContent(file, credential)).getSignedDoc();
 		
 		DataFile dataFile = signedDoc.getDataFile(new Integer(containerFileIndex));
 		
@@ -182,7 +182,7 @@ public class FileServlet extends DrEditServlet {
 			throws IOException {
 
 		InputStream content = gDriveService.downloadContent(file, credential);
-		return  readExistingDDoc(file, digiDocService.parseSignedDoc(content));
+		return  readExistingDDoc(file, digiDocService.parseSignedDoc(content).getSignedDoc());
 	}
 
 	private ClientContainer readExistingDDoc(File file, SignedDoc signedDoc) {
