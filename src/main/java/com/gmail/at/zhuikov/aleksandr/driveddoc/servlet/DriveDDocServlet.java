@@ -23,6 +23,6 @@ public class DriveDDocServlet extends AuthorizationServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		req.getRequestDispatcher("/public/index.html").forward(req, resp);
+		req.getRequestDispatcher("/public/editor.html").forward(req, resp);
 	}
 }

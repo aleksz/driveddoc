@@ -24,7 +24,7 @@ public class AuthenticationFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		
 		if (((HttpServletRequest) req).getSession().getAttribute("me") == null) {
-			((HttpServletResponse) resp).sendError(401);
+			req.getRequestDispatcher("/public/index.html").forward(req, resp);
 			return;
 		}
 		
