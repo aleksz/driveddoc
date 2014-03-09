@@ -48,3 +48,7 @@ body {
 }
 
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+.navbar-nav > li > div {
+    padding: 15px;
+}
