@@ -16,7 +16,7 @@ module.directive('file', function($rootScope, $log) {
                 $scope.$apply(function($scope) {
                 	ngModel.$setViewValue(element.val());
 
-                	if (file.type != attrs["accept"]) {
+                	if (attrs["accept"].indexOf(file.type) == -1) {
                 		ngModel.$setValidity('accept', false);
                 	} else {
                 		ngModel.$setValidity('accept', true);

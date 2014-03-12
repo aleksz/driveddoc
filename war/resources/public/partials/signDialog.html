@@ -112,13 +112,13 @@
 						</ul>
 					</div>
 	   				<div class="form-group" x-ng-class="{'has-error': form.ocspCertFile.$invalid}">
-						<label for="ocspCertFile" class="col-lg-3 control-label">Certificate file (.p12d)</label>
+						<label for="ocspCertFile" class="col-lg-3 control-label">Certificate file (.p12d or .p12)</label>
 						<div class="col-lg-9">
 						    <file 
 						    	id="ocspCertFile"
 						    	name="ocspCertFile"
 						    	x-ng-model="ocspCertFile"
-						    	accept="application/x-p12d"
+						    	accept="application/x-p12d,application/x-pkcs12"
 						    	required/>
 						</div>
 					</div>
