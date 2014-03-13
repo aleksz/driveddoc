@@ -17,6 +17,8 @@ import com.google.api.services.drive.model.File;
 
 @Singleton
 public class GDriveService {
+	
+	private static final int DOWNLOAD_TIMEOUT = 30 * 1000;
 
 	private HttpTransport transport;
 	private JsonFactory jsonFactory;
@@ -50,8 +52,11 @@ public class GDriveService {
 	}
 	
 	private InputStream downloadContent(Drive drive, File file) throws IOException {
-		return drive.getRequestFactory().buildGetRequest(
-				new GenericUrl(file.getDownloadUrl())).execute().getContent();
+		return drive.getRequestFactory()
+				.buildGetRequest(	new GenericUrl(file.getDownloadUrl()))
+				.setReadTimeout(DOWNLOAD_TIMEOUT)
+				.execute()
+				.getContent();
 	}
 	
 	public void updateContent(File file, byte[] content, Credential credential) throws IOException {
