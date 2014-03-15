@@ -5,6 +5,7 @@ buildscript {
     
     dependencies {
         classpath 'com.google.appengine:gradle-appengine-plugin:1.8.7'
+        classpath 'com.eriwen:gradle-js-plugin:1.9.0'
     }
 }
 
@@ -12,6 +13,7 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'appengine'
 apply plugin: 'eclipse'
+apply plugin: 'js'
 
 war {
 	webAppDirName = 'war'
@@ -78,6 +80,31 @@ task startFakeSSL {
 }
 
 appengineRun.dependsOn startFakeSSL
+
+javascript.source {
+    dev {
+        js {
+        	srcDir "war/resources/public/js"
+        }
+    }
+    prod {
+        js {
+            srcDir jsSrcDir
+            include "*.min.js"
+        }
+    }
+}
+
+combineJs {
+    source = javascript.source.dev.js.files
+    dest = file("${buildDir}/all.js")
+}
+
+requireJs {
+    source = javascript.source.dev.js.files
+    //dest = file("${buildDir}/out.js")
+	requirejs.buildprofile = new File("war/resources/public/build.js")
+}
 
 task jasmine(type: Exec) {
 	commandLine 'phantomjs war/resources/test/run-jasmine.js war/resources/test/SpecRunner.html'.tokenize()
