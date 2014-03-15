@@ -1,3 +1,4 @@
+define(['angular'], function(angular) {
 'use strict';
 
 var module = angular.module('app.directives', []);
@@ -65,3 +66,4 @@ module.directive('myalert', function ($rootScope) {
                 '</div>'
         }
     })
+});

@@ -1,3 +1,4 @@
+define(['angular', 'services'], function(angular) {
 'use strict';
 
 var module = angular.module('app.controllers', [])
@@ -178,3 +179,4 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 				});
 	}
 } ]);
+});
