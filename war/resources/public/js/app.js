@@ -1,4 +1,4 @@
-define(['angular', 'services', 'directives', 'controllers', 'angular-route', 'angular-resource', 'ui-bootstrap', 'angulartics-google-analytics'], function(angular) {
+define(['angular', 'services', 'directives', 'controllers', 'angular-route', 'angular-resource', 'ui-bootstrap', 'ui-bootstrap-tpls', 'angulartics-google-analytics'], function(angular) {
 
 	'use strict';
 

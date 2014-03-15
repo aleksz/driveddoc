@@ -26,6 +26,9 @@ require.config({
     	},
     	'ui-bootstrap': {
     		deps: [ 'angular' ]
+    	},
+    	'ui-bootstrap-tpls': {
+    		deps: [ 'ui-bootstrap' ]
     	}
     },
     priority: [
