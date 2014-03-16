@@ -1,11 +1,13 @@
 require.config({
+	baseUrl: '.',
     paths: {
-        'jasmine': 'lib/jasmine-2.0.0/jasmine',
-        'jasmine-html': 'lib/jasmine-2.0.0/jasmine-html',
-        'jasmine-console': 'lib/jasmine-2.0.0/console',
-        'jasmine-boot': 'lib/jasmine-2.0.0/boot',
-        'angular-mocks': 'lib/angular/angular-mocks',
-        'spec': 'spec'
+        'jasmine': 'test/lib/jasmine-2.0.0/jasmine',
+        'jasmine-html': 'test/lib/jasmine-2.0.0/jasmine-html',
+        'jasmine-console': 'test/lib/jasmine-2.0.0/console',
+        'jasmine-boot': 'test/lib/jasmine-2.0.0/boot',
+        'angular-mocks': 'test/lib/angular/angular-mocks',
+        'spec': 'test/spec',
+        'boot': 'test/boot'
     },
     shim: {
     	'angular-mocks': {
@@ -16,21 +18,21 @@ require.config({
     	},
         'jasmine-html': {
             deps: [ 'jasmine' ],
-            exports: 'jasmine'
+            exports: 'jasmine-html'
         },
         'jasmine-console': {
         	deps: [ 'jasmine' ],
-        	exports: 'jasmine'
+        	exports: 'jasmine-console'
         },
         'jasmine-boot': {
         	deps: [ 'jasmine', 'jasmine-html' ],
-        	exports: 'jasmine'
+        	exports: 'jasmine-boot'
         }
     }
 });
 
 //Define all of your specs here. These are RequireJS modules.
 var specs = [
-  'spec/ControllersSpec',
-  'spec/DirectivesSpec'
+  'test/spec/ControllersSpec.js',
+  'test/spec/DirectivesSpec.js'
 ];

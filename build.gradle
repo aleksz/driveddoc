@@ -105,7 +105,7 @@ requireJs {
 }
 
 task jasmine(type: Exec) {
-	commandLine 'phantomjs war/resources/test/run-jasmine.js war/resources/test/SpecRunner.html'.tokenize()
+	commandLine 'phantomjs war/resources/test/run-jasmine.js war/resources/SpecRunner.html'.tokenize()
 }
 
 test.dependsOn jasmine
