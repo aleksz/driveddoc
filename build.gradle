@@ -4,7 +4,7 @@ buildscript {
     }
     
     dependencies {
-        classpath 'com.google.appengine:gradle-appengine-plugin:1.8.7'
+        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.0'
         classpath 'com.eriwen:gradle-js-plugin:1.9.0'
     }
 }
@@ -15,9 +15,7 @@ apply plugin: 'appengine'
 apply plugin: 'eclipse'
 apply plugin: 'js'
 
-war {
-	webAppDirName = 'war'
-}
+project.webAppDirName = 'war'
 
 eclipse {
 	project {
@@ -39,7 +37,7 @@ tasks.eclipse.dependsOn eclipseLibs
 
 appengine {
     httpPort = 8888
-    //downloadSdk = true
+    downloadSdk = true
 }
 
 repositories {
@@ -54,7 +52,7 @@ dependencies {
 	testCompile 'junit:junit:4.11'
 	testCompile 'org.mockito:mockito-all:1.9.5'
 
-	//appengineSdk 'com.google.appengine:appengine-java-sdk:1.8.6'
+	appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.0'
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.8.8'
     compile 'com.google.api-client:google-api-client-gson:1.17.0-rc'
 	compile 'com.google.oauth-client:google-oauth-client-appengine:1.17.0-rc'
