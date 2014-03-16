@@ -1,4 +1,4 @@
-define(['angular'], function(angular) {
+define(['angular', 'id-card'], function(angular) {
 'use strict';
 
 var module = angular.module('app.services', []);
