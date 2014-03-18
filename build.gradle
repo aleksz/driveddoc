@@ -38,6 +38,9 @@ tasks.eclipse.dependsOn eclipseLibs
 appengine {
     httpPort = 8888
     downloadSdk = true
+    appcfg {
+    	oauth2 = true
+    }
 }
 
 repositories {
