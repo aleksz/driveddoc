@@ -6,8 +6,8 @@ require.config({
         'angular-resource': ['//ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular-resource.min', 'public/lib/angular-resource.min'],
         'ui-bootstrap': ['//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.9.0/ui-bootstrap.min', 'public/lib/ui-bootstrap.min'],
         'ui-bootstrap-tpls': ['//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.9.0/ui-bootstrap-tpls.min', 'public/lib/ui-bootstrap-tpls.min'],
-        'angulartics': ['public/lib/angulartics/angulartics.min'],
-        'angulartics-google-analytics': ['public/lib/angulartics/angulartics-google-analytics.min'],
+        'angulartics': 'public/lib/angulartics/angulartics',
+        'angulartics-google-analytics': 'public/lib/angulartics/angular-google-analytics',
         'app': 'public/js/app',
         'controllers': 'public/js/controllers',
         'services': 'public/js/services',
@@ -24,12 +24,6 @@ require.config({
     	},
     	'angular-resource': {
     		deps: [ 'angular' ]
-    	},
-    	'angulartics': {
-    		deps: [ 'angular' ]
-    	},
-    	'angulartics-google-analytics': {
-    		deps: [ 'angulartics' ]
     	},
     	'ui-bootstrap': {
     		deps: [ 'angular' ]

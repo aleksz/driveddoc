@@ -93,16 +93,22 @@ javascript.source {
     }
 }
 
-combineJs {
-    source = javascript.source.dev.js.files
-    dest = file("${buildDir}/all.js")
-}
-
 requireJs {
     source = javascript.source.dev.js.files
     //dest = file("${buildDir}/out.js")
-	requirejs.buildprofile = new File("war/resources/public/build.js")
+	requirejs.buildprofile = new File("war/resources/build.js")
 }
+
+war {
+	exclude 'resources'
+	
+	from("${buildDir}/webapp") {
+		include '**/*'
+		into 'resources'
+	}
+}
+
+war.dependsOn requireJs
 
 task jasmine(type: Exec) {
 	commandLine 'phantomjs war/resources/test/run-jasmine.js war/resources/SpecRunner.html'.tokenize()
