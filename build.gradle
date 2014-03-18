@@ -114,7 +114,7 @@ task jasmine(type: Exec) {
 	commandLine 'phantomjs war/resources/test/run-jasmine.js war/resources/SpecRunner.html'.tokenize()
 }
 
-test.dependsOn jasmine
+check.dependsOn jasmine
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
