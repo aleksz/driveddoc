@@ -14,16 +14,13 @@
 
 package com.google.drive.samples.dredit;
 
-import static java.util.Arrays.asList;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -33,27 +30,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientContainer;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientSignature;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.FileInContainer;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CachedContainerService;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.util.IOUtils;
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.App;
-import com.google.api.services.drive.model.App.Icons;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.ParentReference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;
-import ee.sk.digidoc.KeyInfo;
-import ee.sk.digidoc.Signature;
 import ee.sk.digidoc.SignedDoc;
 
 
@@ -65,12 +56,14 @@ public class FileServlet extends DrEditServlet {
 	
 	private DigiDocService digiDocService;
 	private GDriveService gDriveService;
+	private final ContainerService containerService;
 	
 	@Inject
-	public FileServlet(GDriveService gDriveService, DigiDocService digiDocService, JsonFactory jsonFactory) {
+	public FileServlet(GDriveService gDriveService, DigiDocService digiDocService, JsonFactory jsonFactory, CachedContainerService containerService) {
 		super(jsonFactory);
 		this.gDriveService = gDriveService;
 		this.digiDocService = digiDocService;
+		this.containerService = containerService;
 	}
 	
   @Override
@@ -90,7 +83,7 @@ public class FileServlet extends DrEditServlet {
 		String containerFileIndex = req.getParameter("index");
 		
 		if (containerFileIndex == null) {
-			ClientContainer fileContent = downloadFileContent(getCredential(), file);
+			ClientContainer fileContent = containerService.getContainer(fileId, getCredential());
 			
 			if (fileContent == null) {
 				sendError(resp, 400, "Could not read file");
@@ -178,28 +171,6 @@ public class FileServlet extends DrEditServlet {
 		return clientContainer;
 	}
 
-	private ClientContainer downloadFileContent(Credential credential, File file)
-			throws IOException {
-
-		InputStream content = gDriveService.downloadContent(file, credential);
-		return  readExistingDDoc(file, digiDocService.parseSignedDoc(content).getSignedDoc());
-	}
-
-	private ClientContainer readExistingDDoc(File file, SignedDoc signedDoc) {
-		ClientContainer container = new ClientContainer();
-		container.title = file.getTitle();
-		container.id = file.getId();
-		
-		if (signedDoc == null) {
-			return null;
-		}
-		
-		addSignatures(container, signedDoc);
-
-		extractFiles(signedDoc, container);
-		return container;
-	}
-
 	private void extractFiles(SignedDoc signedDoc, ClientContainer container) {
 		for (Object dataFileObject : signedDoc.getDataFiles()) {
 			DataFile dataFile = (DataFile) dataFileObject;
@@ -207,74 +178,6 @@ public class FileServlet extends DrEditServlet {
 			FileInContainer fileInContainer = new FileInContainer();
 			fileInContainer.title = dataFile.getFileName();
 			container.files.add(fileInContainer);
-		}
-	}
-
-	private void addSignatures(ClientContainer container, SignedDoc signedDoc) {
-		if (signedDoc.getSignatures() != null) {
-			for (Object signatureObject : signedDoc.getSignatures()) {
-				Signature signature = (Signature) signatureObject;
-				ClientSignature clientSignature = getSignature(signature, signedDoc);
-				LOG.fine("Adding signature " + clientSignature);
-				container.signatures.add(clientSignature);
-			}
-		}
-	}
-
-	private ClientSignature getSignature(Signature signature, SignedDoc signedDoc) {
-		
-		Collection<String> errors = new ArrayList<>();
-		
-        for (Object errorObject : signature.verify(signedDoc, false, false)) {
-        	errors.add(errorObject.toString());
-        }
-		
-		KeyInfo keyInfo = signature.getKeyInfo();
-		
-		return new ClientSignature(
-				keyInfo.getSubjectFirstName() + " " + keyInfo.getSubjectLastName(),
-				keyInfo.getSubjectPersonalCode(),
-				signature.getSignedProperties().getSigningTime(),
-				errors);
-	}
-	
-	private Icons getIcon(App app) {
-		for (Icons icon : app.getIcons()) {
-			if ("application".equals(icon.getCategory()) && 16 == icon.getSize()) {
-				return icon;
-			}
-		}
-		
-		return null;
-	}
-	
-	private App getApp(Drive drive, String id) throws IOException {
-		return drive.apps().get(id).execute();
-	}
-
-	private File insertFile(Drive drive, DataFile file) throws IOException {
-		try {
-			LOG.finest("Saving temporary file " + file.getFileName());
-
-			String mimeType = "file".equals(file.getMimeType()) ? null : file.getMimeType();
-			
-			File descriptor = new File();
-			descriptor.setTitle(file.getFileName());
-			descriptor.setMimeType(mimeType);
-			descriptor.setParents(asList(new ParentReference().setId("appdata")));
-			
-			ByteArrayContent content = new ByteArrayContent(
-					mimeType,
-					file.getBodyAsData());
-			
-			File tmpFile = drive.files().insert(descriptor, content).execute();
-			
-			LOG.finest("Saved temporary file " + tmpFile.getTitle());
-			
-			return tmpFile;
-			
-		} catch (DigiDocException e) {
-			throw new RuntimeException(e);
 		}
 	}
 }

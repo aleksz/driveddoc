@@ -1,10 +1,13 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
-public class ClientSignature {
+public class ClientSignature implements Serializable  {
 
+	private static final long serialVersionUID = 1L;
+	
 	public String signerName;
 	public String personalCode;
 	public Date date;
