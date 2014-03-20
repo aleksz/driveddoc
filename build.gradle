@@ -41,6 +41,9 @@ appengine {
     appcfg {
     	oauth2 = true
     }
+    logs {
+    	outputFile = file('appengine.log')
+    }
 }
 
 repositories {
