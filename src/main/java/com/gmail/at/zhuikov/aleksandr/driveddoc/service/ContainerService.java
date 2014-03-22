@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
 
-import javax.inject.Singleton;
-
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientSignature;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.FileInContainer;
@@ -78,19 +76,20 @@ public class ContainerService {
 		}
 	}
 	
-private ClientSignature getSignature(Signature signature, SignedDoc signedDoc) {
-		
+	private ClientSignature getSignature(Signature signature,
+			SignedDoc signedDoc) {
+
 		Collection<String> errors = new ArrayList<>();
-		
-        for (Object errorObject : signature.verify(signedDoc, false, false)) {
-        	errors.add(errorObject.toString());
-        }
-		
+
+		for (Object errorObject : signature.verify(signedDoc, false, false)) {
+			errors.add(errorObject.toString());
+		}
+
 		KeyInfo keyInfo = signature.getKeyInfo();
-		
+
 		return new ClientSignature(
-				keyInfo.getSubjectFirstName() + " " + keyInfo.getSubjectLastName(),
-				keyInfo.getSubjectPersonalCode(),
+				keyInfo.getSubjectFirstName() + " "	+ keyInfo.getSubjectLastName(),
+				keyInfo.getSubjectPersonalCode(), 
 				signature.getSignedProperties().getSigningTime(),
 				errors);
 	}
