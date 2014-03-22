@@ -179,9 +179,6 @@ module.factory('backend',
             user:function () {
                 return $http.get('/api/user', {transformResponse:jsonTransform});
             },
-//            about:function () {
-//                return $http.get('/about', {transformResponse:jsonTransform});
-//            },
             load: function(id) {
             	return fileResource.get({ 'file_id':id }).$promise;
             },
