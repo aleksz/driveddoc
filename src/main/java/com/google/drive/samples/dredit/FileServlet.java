@@ -79,7 +79,6 @@ public class FileServlet extends DrEditServlet {
     
     try {
     	
-		File file = gDriveService.getFile(fileId, getCredential());
 		String containerFileIndex = req.getParameter("index");
 		
 		if (containerFileIndex == null) {
@@ -92,6 +91,7 @@ public class FileServlet extends DrEditServlet {
 			}
 			
 		} else {
+			File file = gDriveService.getFile(fileId, getCredential());
 			download(resp, getCredential(), file, containerFileIndex);
 		}
 	  
