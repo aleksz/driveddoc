@@ -176,7 +176,7 @@ module.factory('backend',
             return angular.fromJson(data);
         };
         var service = {
-            user:function () {
+            user: function () {
                 return $http.get('/api/user', {transformResponse:jsonTransform});
             },
             load: function(id) {
