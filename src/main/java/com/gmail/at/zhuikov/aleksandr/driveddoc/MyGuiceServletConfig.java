@@ -12,13 +12,13 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.OCSPSignatureContainerSe
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.OCSPSignatureContainerUploadURLServlet;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.SignServlet;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.SignatureServlet;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.UserServlet;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.drive.samples.dredit.AboutServlet;
 import com.google.drive.samples.dredit.FileServlet;
-import com.google.drive.samples.dredit.UserServlet;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;

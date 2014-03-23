@@ -132,15 +132,4 @@ public abstract class DrEditServlet extends AuthorizationServlet {
     return new Drive.Builder(TRANSPORT, jsonFactory, credential)
     	.setApplicationName("Drive DigiDoc").build();
   }
-
-  /**
-   * Build and return an Oauth2 service object based on given request parameters.
-   * @param credential User credentials.
-   * @return Drive service object that is ready to make requests, or null if
-   *         there was a problem.
-   */
-  protected Oauth2 getOauth2Service(Credential credential) {
-    return new Oauth2.Builder(TRANSPORT, jsonFactory, credential)
-    	.setApplicationName("Drive DigiDoc").build();
-  }
 }
