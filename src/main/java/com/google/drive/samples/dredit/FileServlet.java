@@ -14,13 +14,9 @@
 
 package com.google.drive.samples.dredit;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -29,8 +25,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientContainer;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.FileInContainer;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CachedContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
@@ -122,7 +117,7 @@ public class FileServlet extends DrEditServlet {
 		}
 
 		File file = gDriveService.getFile(fileId, getCredential());
-		sendJson(resp, createNewDDocWithFile(file, gDriveService.downloadContent(file, getCredential())));
+		sendJson(resp, containerService.createNewDDocWithFile(file, gDriveService.downloadContent(file, getCredential()), getCredential()));
 	}
 
 	private void download(HttpServletResponse resp, Credential credential, File file,
@@ -140,44 +135,6 @@ public class FileServlet extends DrEditServlet {
 			IOUtils.copy(dataFile.getBodyAsStream(), resp.getOutputStream());
 		} catch (DigiDocException e) {
 			throw new RuntimeException(e);
-		}
-	}
-
-	private ClientContainer createNewDDocWithFile(File file, InputStream content) throws IOException {
-		SignedDoc container = digiDocService.createContainer(file.getTitle(),
-				file.getMimeType(),
-				gDriveService.downloadContent(file, getCredential()));
-
-		File containerFile = new File();
-		containerFile.setTitle(file.getTitle() + ".ddoc");
-		containerFile.setMimeType("application/ddoc");
-		containerFile.setParents(file.getParents());
-
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		try {
-			container.writeToStream(os);
-		} catch (DigiDocException e) {
-			throw new RuntimeException(e);
-		}
-
-		containerFile = gDriveService.insertFile(containerFile, 	new ByteArrayInputStream(os.toByteArray()), getCredential());
-		
-		ClientContainer clientContainer = new ClientContainer();
-		clientContainer.title = containerFile.getTitle();
-		clientContainer.id = containerFile.getId();
-		
-		extractFiles(container, clientContainer);
-		
-		return clientContainer;
-	}
-
-	private void extractFiles(SignedDoc signedDoc, ClientContainer container) {
-		for (Object dataFileObject : signedDoc.getDataFiles()) {
-			DataFile dataFile = (DataFile) dataFileObject;
-			
-			FileInContainer fileInContainer = new FileInContainer();
-			fileInContainer.title = dataFile.getFileName();
-			container.files.add(fileInContainer);
 		}
 	}
 }

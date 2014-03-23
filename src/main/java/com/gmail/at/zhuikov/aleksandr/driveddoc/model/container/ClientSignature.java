@@ -1,4 +1,4 @@
-package com.gmail.at.zhuikov.aleksandr.driveddoc.model;
+package com.gmail.at.zhuikov.aleksandr.driveddoc.model.container;
 
 import java.io.Serializable;
 import java.util.Collection;

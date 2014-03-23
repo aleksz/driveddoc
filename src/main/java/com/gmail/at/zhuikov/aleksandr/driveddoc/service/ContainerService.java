@@ -1,18 +1,21 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
 
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientContainer;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientSignature;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.FileInContainer;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientContainer;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientSignature;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.FileInContainer;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.drive.model.File;
 
 import ee.sk.digidoc.DataFile;
+import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.KeyInfo;
 import ee.sk.digidoc.Signature;
 import ee.sk.digidoc.SignedDoc;
@@ -70,8 +73,7 @@ public class ContainerService {
 		for (Object dataFileObject : signedDoc.getDataFiles()) {
 			DataFile dataFile = (DataFile) dataFileObject;
 			
-			FileInContainer fileInContainer = new FileInContainer();
-			fileInContainer.title = dataFile.getFileName();
+			FileInContainer fileInContainer = new FileInContainer(dataFile.getFileName(), dataFile.getMimeType());
 			container.files.add(fileInContainer);
 		}
 	}
@@ -92,5 +94,33 @@ public class ContainerService {
 				keyInfo.getSubjectPersonalCode(), 
 				signature.getSignedProperties().getSigningTime(),
 				errors);
+	}
+	
+	public ClientContainer createNewDDocWithFile(File file, InputStream content, Credential credential) throws IOException {
+		SignedDoc container = digiDocService.createContainer(file.getTitle(),
+				file.getMimeType(),
+				gDriveService.downloadContent(file, credential));
+
+		File containerFile = new File();
+		containerFile.setTitle(file.getTitle() + ".ddoc");
+		containerFile.setMimeType("application/ddoc");
+		containerFile.setParents(file.getParents());
+
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try {
+			container.writeToStream(os);
+		} catch (DigiDocException e) {
+			throw new RuntimeException(e);
+		}
+
+		containerFile = gDriveService.insertFile(containerFile, 	new ByteArrayInputStream(os.toByteArray()), credential);
+		
+		ClientContainer clientContainer = new ClientContainer();
+		clientContainer.title = containerFile.getTitle();
+		clientContainer.id = containerFile.getId();
+		
+		extractFiles(container, clientContainer);
+		
+		return clientContainer;
 	}
 }

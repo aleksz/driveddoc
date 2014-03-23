@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ClientContainer;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientContainer;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.drive.model.File;
 import com.google.appengine.api.memcache.AsyncMemcacheService;
