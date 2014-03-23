@@ -36,6 +36,14 @@ public class ContainerService {
 		File file = gDriveService.getFile(fileId, credential);
 		return getContainer(credential, file);
 	}
+	
+	public DataFile  getFile(String fileId, int index, Credential credential) throws IOException {
+		File file = gDriveService.getFile(fileId, credential);
+		SignedDoc signedDoc = digiDocService.parseSignedDoc(
+				gDriveService.downloadContent(file, credential)).getSignedDoc();
+	
+		return signedDoc.getDataFile(new Integer(index));
+	}
 
 	protected ClientContainer getContainer(Credential credential, File file)
 			throws IOException {

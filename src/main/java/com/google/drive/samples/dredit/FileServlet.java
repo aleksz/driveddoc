@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CachedContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -40,7 +39,6 @@ import com.google.gson.reflect.TypeToken;
 
 import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;
-import ee.sk.digidoc.SignedDoc;
 
 
 @Singleton
@@ -49,15 +47,13 @@ public class FileServlet extends DrEditServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(FileServlet.class.getName());
 	
-	private DigiDocService digiDocService;
 	private GDriveService gDriveService;
 	private final ContainerService containerService;
 	
 	@Inject
-	public FileServlet(GDriveService gDriveService, DigiDocService digiDocService, JsonFactory jsonFactory, CachedContainerService containerService) {
+	public FileServlet(GDriveService gDriveService, JsonFactory jsonFactory, CachedContainerService containerService) {
 		super(jsonFactory);
 		this.gDriveService = gDriveService;
-		this.digiDocService = digiDocService;
 		this.containerService = containerService;
 	}
 	
@@ -86,8 +82,7 @@ public class FileServlet extends DrEditServlet {
 			}
 			
 		} else {
-			File file = gDriveService.getFile(fileId, getCredential());
-			download(resp, getCredential(), file, containerFileIndex);
+			download(resp, getCredential(), fileId, new Integer(containerFileIndex));
 		}
 	  
     } catch (GoogleJsonResponseException e) {
@@ -120,13 +115,10 @@ public class FileServlet extends DrEditServlet {
 		sendJson(resp, containerService.createNewDDocWithFile(file, gDriveService.downloadContent(file, getCredential()), getCredential()));
 	}
 
-	private void download(HttpServletResponse resp, Credential credential, File file,
-			String containerFileIndex) throws IOException {
+	private void download(HttpServletResponse resp, Credential credential, String fileId,
+			int containerFileIndex) throws IOException {
 		
-		SignedDoc signedDoc = digiDocService.parseSignedDoc(
-					gDriveService.downloadContent(file, credential)).getSignedDoc();
-		
-		DataFile dataFile = signedDoc.getDataFile(new Integer(containerFileIndex));
+		DataFile dataFile = containerService.getFile(fileId, containerFileIndex, credential);
 		
 		resp.setContentType("application/x-download");
 		resp.setHeader("Content-Disposition", "attachment; filename=" + dataFile.getFileName());
