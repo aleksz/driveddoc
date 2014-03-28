@@ -52,3 +52,8 @@ body {
 .navbar-nav > li > div {
     padding: 15px;
 }
+
+.driveIcon {
+	margin-top: -4px;
+	cursor: pointer;
+}

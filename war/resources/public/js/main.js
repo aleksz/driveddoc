@@ -6,6 +6,7 @@ require.config({
         'angular-resource': ['//ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular-resource.min', 'public/lib/angular-resource.min'],
         'ui-bootstrap': ['//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.9.0/ui-bootstrap.min', 'public/lib/ui-bootstrap.min'],
         'ui-bootstrap-tpls': ['//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.9.0/ui-bootstrap-tpls.min', 'public/lib/ui-bootstrap-tpls.min'],
+        'spin': ['//cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.0/spin.min', 'public/lib/spin.min'],
         'angulartics': 'public/lib/angulartics/angulartics',
         'angulartics-google-analytics': 'public/lib/angulartics/angular-google-analytics',
         'app': 'public/js/app',

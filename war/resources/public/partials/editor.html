@@ -36,14 +36,31 @@
 	                        	</div>
 	                		</td>
 	                		<td align="right">
-	                			<a href="/api/svc?file_id={{doc.info.id}}&index={{$index}}" 
-	                					data-toggle="tooltip" 
-	                					title="Download" 
-	                					analytics-on="click"
-	                					analytics-category="buttons"
-	                					analytics-event="Download">
-	                				<span class="glyphicon glyphicon-download"></span>
-	                			</a>
+	                			<ul class="list-inline">
+	                				<li>
+	                					<spinner ng-show="savingToDrive[$index]"/>
+			                			<img x-ng-hide="savingToDrive[$index]"
+			                					data-toggle="tooltip"
+			                					title="Save to GDrive" 
+			                					x-ng-click="saveToDrive($index)"
+			                					analytics-on="click"
+			                					analytics-category="buttons"
+			                					analytics-event="Save to GDrive"
+			                					alt="Save to drive" 
+			                					class="driveIcon" 
+			                					src="/public/img/drive16.png">
+	                				</li>
+	                				<li>
+			                			<a href="/api/svc?file_id={{doc.info.id}}&index={{$index}}" 
+			                					data-toggle="tooltip" 
+			                					title="Download" 
+			                					analytics-on="click"
+			                					analytics-category="buttons"
+			                					analytics-event="Download">
+			                				<span class="glyphicon glyphicon-download"></span>
+			                			</a>
+	                				</li>
+	                			</ul>
 	                		</td>
                 		</tr>
 			    	</tbody>

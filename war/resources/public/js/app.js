@@ -1,4 +1,6 @@
-define(['angular', 'services', 'directives', 'controllers', 'angular-route', 'angular-resource', 'ui-bootstrap', 'ui-bootstrap-tpls', 'angulartics-google-analytics'], function(angular) {
+define(['angular', 'services', 'directives', 'controllers', 'angular-route', 
+        'angular-resource', 'ui-bootstrap', 'ui-bootstrap-tpls', 
+        'angulartics-google-analytics'], function(angular) {
 
 	'use strict';
 
@@ -9,7 +11,8 @@ define(['angular', 'services', 'directives', 'controllers', 'angular-route', 'an
 	                       'ngRoute', 
 	                       'ui.bootstrap', 
 	                       'ngResource', 
-	                       'angulartics.google.analytics'])
+	                       'angulartics.google.analytics'
+	                       ])
 	                       .config(['$routeProvider', function ($routeProvider) {
 	
 		$routeProvider.when('/edit/:id', {

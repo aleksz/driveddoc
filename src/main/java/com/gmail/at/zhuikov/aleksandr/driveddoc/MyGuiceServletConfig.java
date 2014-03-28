@@ -6,6 +6,7 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.filter.LegacyDriveUIIntegrationF
 import com.gmail.at.zhuikov.aleksandr.driveddoc.filter.ServerNameFilter;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.AuthorizationCallbackServlet;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.DriveDDocServlet;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.DriveFileServlet;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.DriveUIIntegrationServlet;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.IdSignServlet;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.OCSPSignatureContainerServlet;
@@ -53,6 +54,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 				serve("/api/sign").with(SignServlet.class);
 				serve("/api/sign/id").with(IdSignServlet.class);
 				serve("/api/signatures").with(SignatureServlet.class);
+				serve("/api/drivefile").with(DriveFileServlet.class);
 				serve("/api/OCSPSignatureContainer").with(OCSPSignatureContainerServlet.class);
 				serve("/api/OCSPSignatureContainerUploadURL").with(OCSPSignatureContainerUploadURLServlet.class);
 				serve("/driveui").with(DriveUIIntegrationServlet.class);

@@ -1,7 +1,35 @@
-define(['angular'], function(angular) {
+define(['angular', 'spin'], function(angular, Spinner) {
 'use strict';
 
 var module = angular.module('app.directives', []);
+
+module.directive('spinner', function($log) {
+	return {
+		restrict: 'E',
+		replace: true,
+		template: '<span/>',
+		link: function($scope, element, attrs) {
+			
+			element
+				.css("position", "relative")
+				.css("display", "inline-block")
+				.css("width", "14px")
+				.css("height", "14px")
+			
+			var opts = {
+					  lines: 10, // The number of lines to draw
+					  length: 5, // The length of each line
+					  width: 2, // The line thickness
+					  radius: 2, // The radius of the inner circle
+					  trail: 30, // Afterglow percentage
+					  shadow: false, // Whether to render a shadow
+					};
+
+			
+			new Spinner(opts).spin(element[0]);
+		}
+	}
+});
 
 module.directive('file', function($rootScope, $log) {
 	return {

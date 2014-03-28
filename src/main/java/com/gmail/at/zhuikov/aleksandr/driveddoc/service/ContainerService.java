@@ -44,6 +44,25 @@ public class ContainerService {
 	
 		return signedDoc.getDataFile(new Integer(index));
 	}
+	
+	public void saveFileToDrive(String containerFileId, int index, Credential credential) throws IOException {
+		File containerFile = gDriveService.getFile(containerFileId, credential);
+		
+		SignedDoc signedDoc = digiDocService.parseSignedDoc(
+				gDriveService.downloadContent(containerFile, credential)).getSignedDoc();
+	
+		DataFile dataFile = signedDoc.getDataFile(new Integer(index));
+		
+		File file = new File();
+		file.setTitle(dataFile.getFileName());
+		file.setParents(containerFile.getParents());
+		
+		try {
+			gDriveService.insertFile(file, dataFile.getBodyAsStream(), credential);
+		} catch (DigiDocException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	protected ClientContainer getContainer(Credential credential, File file)
 			throws IOException {

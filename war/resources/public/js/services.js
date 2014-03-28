@@ -42,39 +42,24 @@ module.factory('idCard', function($log, $rootScope, $q, $timeout) {
 	}
 });
 
-module.factory('editor', function (doc, backend, $q, $rootScope, $log) {
+module.factory('editor', function (doc, backend, $q, $rootScope, $log, $resource) {
         var editor = null;
-//        var EditSession = require("ace/edit_session").EditSession;
+
         var service = {
             loading: false,
             saving: false,
             rebind: function (element) {
             	$log.info("Rebind editor");
             	editor = element;
-//                editor = ace.edit(element);
             },
-//            snapshot:function () {
-//                doc.dirty = false;
-//                var data = angular.extend({}, doc.info);
-//                data.resource_id = doc.resource_id;
-//                if (doc.info.editable) {
-//                    data.content = editor.getSession().getValue();
-//                }
-//                return data;
-//            },
-            create:function () {
-                $log.info("Creating new doc");
-//                this.updateEditor({
-//                    content:'',
-//                    labels:{
-//                        starred:false
-//                    },
-//                    editable:true,
-//                    title:'Untitled document',
-//                    description:'',
-//                    mimeType:'text/plain',
-//                    resource_id:null
-//                });
+            saveToDrive: function(index) {
+            	$log.info("Saving " + index + " file to GDrive");
+            	return $resource("/api/drivefile").save({ 
+            		fileIndex: index, 
+            		containerFileId: doc.resource_id 
+            		}, function() {
+            			$log.info("File saved to GDrive");
+            		}).$promise;
             },
             load:function (id, reload) {
                 $log.info("Loading resource", id, doc.resource_id);

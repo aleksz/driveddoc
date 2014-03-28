@@ -21,6 +21,15 @@ module.controller('EditorCtrl', ['$scope', '$routeParams', 'editor', 'doc', '$mo
 	$scope.doc = doc;
 
 	editor.load($routeParams.id);
+	
+	$scope.saveToDrive = function(index) {
+		$scope.savingToDrive = $scope.savingToDrive || {};
+		$scope.savingToDrive[index] = true;
+		
+		editor.saveToDrive(index).then(function() {
+			$scope.savingToDrive[index] = false;
+		});
+	}
 
 	$scope.openSignDialog = function() {
 		
