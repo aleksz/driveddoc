@@ -10,9 +10,7 @@
     	"angular-resource": "empty:",
     	"ui-bootstrap": "empty:",
     	"ui-bootstrap-tpls": "empty:",
-//    	"angulartics-google-analytics": "empty:",
-//        'angulartics': 'public/lib/angulartics/angulartics.min',
-//        'angulartics-google-analytics': 'public/lib/angulartics/angulartics-google-analytics.min'   	
+    	"spin": "empty:"
     },
     name: "public/js/main"
 })
