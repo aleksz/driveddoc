@@ -42,9 +42,9 @@ module.controller('EditorCtrl', ['$scope', '$routeParams', 'editor', 'doc', '$mo
 } ]);
 
 module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
-                            		'$log', 'editor', '$rootScope', 'idCard', '$modalInstance',
+                            		'$log', 'editor', '$rootScope', 'idCard', '$modalInstance', '$analytics',
                             		function($scope, backend, doc, $timeout, $log, editor, 
-                            				$rootScope, idCard, $modalInstance) {
+                            				$rootScope, idCard, $modalInstance, $analytics) {
 
 	$scope.reset = function() {
 		$scope.step = 'chooseMethod';
@@ -95,6 +95,7 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 		}).then(function() {
 			$scope.close();
 			editor.load(doc.info.id, true);
+			$analytics.eventTrack('Signed by ID card')
 		}, function(e) {
 			if (e instanceof IdCardException) {
 				if (e.isError()) {
