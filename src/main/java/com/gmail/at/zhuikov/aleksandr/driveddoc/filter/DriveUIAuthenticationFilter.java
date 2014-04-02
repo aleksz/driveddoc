@@ -1,6 +1,7 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.filter;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.inject.Singleton;
 import javax.servlet.Filter;
@@ -12,12 +13,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
 import com.google.drive.samples.dredit.model.State;
 import com.google.gson.Gson;
 
 @Singleton
 public class DriveUIAuthenticationFilter implements Filter {
 
+	private static final Logger LOG = Logger.getLogger(DriveUIAuthenticationFilter.class.getName());
+	
 	@Override
 	public void destroy() {
 	}
@@ -38,6 +42,7 @@ public class DriveUIAuthenticationFilter implements Filter {
 		State state = new Gson().fromJson(stateParam, State.class);
 		
 		if (state.userId == null) {
+			LOG.warning("Oooops, GDrive does not send us userId");
 			httpRespponse.sendError(401);
 			return;
 		}
