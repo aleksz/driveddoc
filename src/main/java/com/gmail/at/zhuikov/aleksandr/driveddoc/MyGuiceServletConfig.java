@@ -18,7 +18,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.drive.samples.dredit.AboutServlet;
 import com.google.drive.samples.dredit.FileServlet;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -50,7 +49,6 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 				filter("/*").through(AuthenticationFilter.class);
 				serve("/api/svc").with(FileServlet.class);
 				serve("/api/user").with(UserServlet.class);
-				serve("/api/about").with(AboutServlet.class);
 				serve("/api/sign").with(SignServlet.class);
 				serve("/api/sign/id").with(IdSignServlet.class);
 				serve("/api/signatures").with(SignatureServlet.class);
