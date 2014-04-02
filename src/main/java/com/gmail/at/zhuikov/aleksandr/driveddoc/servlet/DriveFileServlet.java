@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CachedContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
 import com.google.api.client.json.JsonFactory;
+import com.google.drive.samples.dredit.CredentialManager;
 import com.google.gson.Gson;
 
 @Singleton
@@ -21,8 +22,8 @@ public class DriveFileServlet extends AuthorizationServlet {
 	private final ContainerService containerService;
 
 	@Inject
-	public DriveFileServlet(JsonFactory jsonFactory, CachedContainerService containerService) {
-		super(jsonFactory);
+	public DriveFileServlet(JsonFactory jsonFactory, CachedContainerService containerService, CredentialManager credentialManager) {
+		super(jsonFactory, credentialManager);
 		this.containerService = containerService;
 	}
 

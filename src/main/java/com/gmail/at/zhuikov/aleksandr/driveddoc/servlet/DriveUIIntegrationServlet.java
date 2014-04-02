@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.client.json.JsonFactory;
+import com.google.drive.samples.dredit.CredentialManager;
 import com.google.drive.samples.dredit.model.State;
 import com.google.gson.Gson;
 
@@ -18,8 +19,8 @@ public class DriveUIIntegrationServlet extends DriveUIAuthorizationServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	public DriveUIIntegrationServlet(JsonFactory jsonFactory) {
-		super(jsonFactory);
+	public DriveUIIntegrationServlet(JsonFactory jsonFactory, CredentialManager credentialManager) {
+		super(jsonFactory, credentialManager);
 	}
 	
 	@Override

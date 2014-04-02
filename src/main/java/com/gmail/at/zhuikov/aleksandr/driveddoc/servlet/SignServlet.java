@@ -18,6 +18,7 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.model.File;
+import com.google.drive.samples.dredit.CredentialManager;
 import com.google.drive.samples.dredit.DrEditServlet;
 
 import ee.sk.digidoc.DigiDocException;
@@ -32,8 +33,8 @@ public class SignServlet extends DrEditServlet {
 	private GDriveService gDriveService;
 	
 	@Inject
-	public SignServlet(GDriveService gDriveService, DigiDocService digiDocService, JsonFactory jsonFactory) {
-		super(jsonFactory);
+	public SignServlet(GDriveService gDriveService, DigiDocService digiDocService, JsonFactory jsonFactory, CredentialManager credentialManager) {
+		super(jsonFactory, credentialManager);
 		this.gDriveService = gDriveService;
 		this.digiDocService = digiDocService;
 	}
@@ -80,8 +81,7 @@ public class SignServlet extends DrEditServlet {
 				// The user has revoked our token or it is otherwise bad.
 				// Delete the local copy so that their next page load will
 				// recover.
-//				deleteCredential(req, resp);
-
+				credentialManager.delete(getUserId(req), getCredential());
 			}
 
 			sendGoogleJsonResponseError(resp, e);

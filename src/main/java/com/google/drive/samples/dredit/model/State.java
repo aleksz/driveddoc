@@ -14,9 +14,6 @@
 
 package com.google.drive.samples.dredit.model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.util.Collection;
 
 public class State {

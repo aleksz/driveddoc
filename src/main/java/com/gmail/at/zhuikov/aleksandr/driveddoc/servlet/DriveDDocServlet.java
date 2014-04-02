@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.client.json.JsonFactory;
+import com.google.drive.samples.dredit.CredentialManager;
 
 @Singleton
 public class DriveDDocServlet extends AuthorizationServlet {
@@ -16,8 +17,8 @@ public class DriveDDocServlet extends AuthorizationServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	public DriveDDocServlet(JsonFactory jsonFactory) {
-		super(jsonFactory);
+	public DriveDDocServlet(JsonFactory jsonFactory, CredentialManager credentialManager) {
+		super(jsonFactory, credentialManager);
 	}
 
 	@Override

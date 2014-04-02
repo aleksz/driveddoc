@@ -1,6 +1,7 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.security.Security;

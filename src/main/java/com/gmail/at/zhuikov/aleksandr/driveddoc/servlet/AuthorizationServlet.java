@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
-import com.google.api.client.extensions.appengine.auth.oauth2.AppEngineCredentialStore;
+import com.google.api.client.auth.oauth2.CredentialStore;
 import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.extensions.servlet.auth.oauth2.AbstractAuthorizationCodeServlet;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -19,11 +19,13 @@ public abstract class AuthorizationServlet extends AbstractAuthorizationCodeServ
 
 	private static final long serialVersionUID = 1L;
 	
-	protected JsonFactory jsonFactory;
+	protected final JsonFactory jsonFactory;
+	protected final CredentialStore credentialStore; 
 	
 	@Inject
-	public AuthorizationServlet(JsonFactory jsonFactory) {
+	public AuthorizationServlet(JsonFactory jsonFactory, CredentialManager credentialManager) {
 		this.jsonFactory = jsonFactory;
+		this.credentialStore = credentialManager;
 	}
 	
 	@Override
@@ -44,7 +46,7 @@ public abstract class AuthorizationServlet extends AbstractAuthorizationCodeServ
 		return new GoogleAuthorizationCodeFlow.Builder(new UrlFetchTransport(),
 				jsonFactory, "610309933249.apps.googleusercontent.com",
 				"YDq0zPizR0rJANUBlgbzlb_4", CredentialManager.SCOPES)
-				.setCredentialStore(new AppEngineCredentialStore())
+				.setCredentialStore(credentialStore)
 				.setAccessType("offline")
 				.build();
 	}

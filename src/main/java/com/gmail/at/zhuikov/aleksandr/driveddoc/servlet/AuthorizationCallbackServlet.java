@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.appengine.auth.oauth2.AppEngineCredentialStore;
+import com.google.api.client.auth.oauth2.CredentialStore;
 import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.extensions.servlet.auth.oauth2.AbstractAuthorizationCodeCallbackServlet;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -25,9 +25,14 @@ public class AuthorizationCallbackServlet extends
 
 	private static final long serialVersionUID = 1L;
 	
-	@Inject
-	JsonFactory jsonFactory;
+	protected final JsonFactory jsonFactory;
+	protected final CredentialStore credentialStore; 
 	
+	@Inject
+	public AuthorizationCallbackServlet(JsonFactory jsonFactory, CredentialManager credentialManager) {
+		this.jsonFactory = jsonFactory;
+		this.credentialStore = credentialManager;
+	}
 	@Override
 	protected void onSuccess(HttpServletRequest req, HttpServletResponse resp,
 			Credential credential) throws ServletException, IOException {
@@ -55,7 +60,7 @@ public class AuthorizationCallbackServlet extends
 				jsonFactory, "610309933249.apps.googleusercontent.com",
 				"YDq0zPizR0rJANUBlgbzlb_4",
 				CredentialManager.SCOPES)
-				.setCredentialStore(new AppEngineCredentialStore())
+				.setCredentialStore(credentialStore)
 				.setAccessType("offline")
 				.build();
 	}

@@ -9,14 +9,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.json.JsonFactory;
+import com.google.drive.samples.dredit.CredentialManager;
 
 public abstract class DriveUIAuthorizationServlet extends AuthorizationServlet {
 
 	private static final long serialVersionUID = 1L;
 	
 	@Inject
-	public DriveUIAuthorizationServlet(JsonFactory jsonFactory) {
-		super(jsonFactory);
+	public DriveUIAuthorizationServlet(JsonFactory jsonFactory, CredentialManager credentialManager) {
+		super(jsonFactory, credentialManager);
 	}
 	
 	@Override

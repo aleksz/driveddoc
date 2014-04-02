@@ -51,15 +51,15 @@ public class FileServlet extends DrEditServlet {
 	private final ContainerService containerService;
 	
 	@Inject
-	public FileServlet(GDriveService gDriveService, JsonFactory jsonFactory, CachedContainerService containerService) {
-		super(jsonFactory);
+	public FileServlet(GDriveService gDriveService, JsonFactory jsonFactory, CachedContainerService containerService, CredentialManager credentialManager) {
+		super(jsonFactory, credentialManager);
 		this.gDriveService = gDriveService;
 		this.containerService = containerService;
 	}
 	
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws IOException {
+      throws IOException, ServletException {
 	  
     String fileId = req.getParameter("file_id");
 
@@ -89,8 +89,7 @@ public class FileServlet extends DrEditServlet {
       if (e.getStatusCode() == 401) {
         // The user has revoked our token or it is otherwise bad.
         // Delete the local copy so that their next page load will recover.
-//        deleteCredential(req, resp);
-        
+        credentialManager.delete(getUserId(req), getCredential());
       }
       sendGoogleJsonResponseError(resp, e);
     } catch (IllegalArgumentException e) {

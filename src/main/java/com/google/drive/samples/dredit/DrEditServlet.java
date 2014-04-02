@@ -27,7 +27,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.oauth2.Oauth2;
 import com.google.gson.Gson;
 
 /**
@@ -42,8 +41,8 @@ public abstract class DrEditServlet extends AuthorizationServlet {
 	
 	private static final Logger LOG = Logger.getLogger(DrEditServlet.class.getName());
 	
-	public DrEditServlet(JsonFactory jsonFactory) {
-		super(jsonFactory);
+	public DrEditServlet(JsonFactory jsonFactory, CredentialManager credentialManager) {
+		super(jsonFactory, credentialManager);
 	}
 
 /**

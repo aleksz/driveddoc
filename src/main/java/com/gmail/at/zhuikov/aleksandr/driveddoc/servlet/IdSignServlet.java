@@ -18,6 +18,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.model.File;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
+import com.google.drive.samples.dredit.CredentialManager;
 import com.google.drive.samples.dredit.DrEditServlet;
 
 import ee.sk.digidoc.DigiDocException;
@@ -35,8 +36,8 @@ public class IdSignServlet extends DrEditServlet {
 
 	
 	@Inject
-	public IdSignServlet(DigiDocService digiDocService, GDriveService gDriveService, JsonFactory jsonFactory) {
-		super(jsonFactory);
+	public IdSignServlet(DigiDocService digiDocService, GDriveService gDriveService, JsonFactory jsonFactory, CredentialManager credentialManager) {
+		super(jsonFactory, credentialManager);
 		this.digiDocService = digiDocService;
 		this.gDriveService = gDriveService;
 	}
@@ -91,8 +92,7 @@ public class IdSignServlet extends DrEditServlet {
 				// The user has revoked our token or it is otherwise bad.
 				// Delete the local copy so that their next page load will
 				// recover.
-//				deleteCredential(req, resp);
-
+				credentialManager.delete(getUserId(req), getCredential());
 			}
 
 			sendGoogleJsonResponseError(resp, e);

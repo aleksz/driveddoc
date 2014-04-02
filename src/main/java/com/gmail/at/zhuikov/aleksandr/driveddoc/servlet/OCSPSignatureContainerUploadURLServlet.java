@@ -13,14 +13,15 @@ import com.google.api.client.json.JsonFactory;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
+import com.google.drive.samples.dredit.CredentialManager;
 import com.google.drive.samples.dredit.DrEditServlet;
 
 @Singleton
 public class OCSPSignatureContainerUploadURLServlet extends DrEditServlet {
 
 	@Inject
-	public OCSPSignatureContainerUploadURLServlet(JsonFactory jsonFactory) {
-		super(jsonFactory);
+	public OCSPSignatureContainerUploadURLServlet(JsonFactory jsonFactory, CredentialManager credentialManager) {
+		super(jsonFactory, credentialManager);
 	}
 
 	private static final long serialVersionUID = 1L;
