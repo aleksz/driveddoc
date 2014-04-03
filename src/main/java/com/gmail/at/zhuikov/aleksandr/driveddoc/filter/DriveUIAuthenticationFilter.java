@@ -42,7 +42,8 @@ public class DriveUIAuthenticationFilter implements Filter {
 		
 		if (state.userId == null) {
 			LOG.warning("Oooops, GDrive does not send us userId");
-			httpRespponse.sendError(401);
+//			httpRespponse.sendError(401);
+			req.getRequestDispatcher("/public/no_drive_user.html").forward(req, resp);
 			return;
 		}
 		
