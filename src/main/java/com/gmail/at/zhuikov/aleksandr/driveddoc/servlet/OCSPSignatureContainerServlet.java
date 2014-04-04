@@ -10,13 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.SignatureContainerService;
 import com.google.api.client.json.JsonFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.drive.samples.dredit.CredentialManager;
 import com.google.drive.samples.dredit.DrEditServlet;
 
 @Singleton

@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CachedContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
 import com.google.api.client.json.JsonFactory;
-import com.google.drive.samples.dredit.CredentialManager;
 import com.google.gson.Gson;
 
 @Singleton

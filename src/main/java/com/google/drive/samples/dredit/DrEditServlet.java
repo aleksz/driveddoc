@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.servlet.AuthorizationServlet;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;

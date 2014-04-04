@@ -1,4 +1,4 @@
-package com.google.drive.samples.dredit;
+package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 
 import java.util.Arrays;
 import java.util.List;

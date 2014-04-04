@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
 import com.google.api.client.json.JsonFactory;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.utils.SystemProperty;
-import com.google.drive.samples.dredit.CredentialManager;
 import com.google.drive.samples.dredit.DrEditServlet;
 
 @Singleton

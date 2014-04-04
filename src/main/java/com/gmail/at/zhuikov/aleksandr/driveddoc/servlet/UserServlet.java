@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CachedUserService;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.UserService;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.JsonFactory;
-import com.google.drive.samples.dredit.CredentialManager;
 import com.google.drive.samples.dredit.DrEditServlet;
 
 @Singleton

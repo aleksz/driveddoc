@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
 import com.google.api.client.auth.oauth2.Credential;
@@ -18,7 +19,6 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.model.File;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
-import com.google.drive.samples.dredit.CredentialManager;
 import com.google.drive.samples.dredit.DrEditServlet;
 
 import ee.sk.digidoc.DigiDocException;
