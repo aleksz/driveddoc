@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.google.drive.samples.dredit.model;
+package com.gmail.at.zhuikov.aleksandr.driveddoc.model;
 
 import java.util.Collection;
 
