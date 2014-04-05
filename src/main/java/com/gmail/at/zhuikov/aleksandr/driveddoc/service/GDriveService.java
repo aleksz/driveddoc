@@ -2,6 +2,8 @@ package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,6 +21,7 @@ import com.google.api.services.drive.model.File;
 public class GDriveService {
 	
 	private static final int DOWNLOAD_TIMEOUT = 30 * 1000;
+	private static final Logger LOG = Logger.getLogger(GDriveService.class.getName());
 
 	private HttpTransport transport;
 	private JsonFactory jsonFactory;
@@ -53,10 +56,21 @@ public class GDriveService {
 	
 	private InputStream downloadContent(Drive drive, File file) throws IOException {
 		return drive.getRequestFactory()
-				.buildGetRequest(	new GenericUrl(file.getDownloadUrl()))
+				.buildGetRequest(	new GenericUrl(getDownloadUrl(file)))
 				.setReadTimeout(DOWNLOAD_TIMEOUT)
 				.execute()
 				.getContent();
+	}
+	
+	private String getDownloadUrl(File file) {
+		Map<String, String>exportLinks = file.getExportLinks();
+				
+		if (exportLinks != null && !exportLinks.isEmpty()) {
+			LOG.info("Using export link");
+			return exportLinks.get("application/pdf");
+		}
+		
+		return file.getDownloadUrl();
 	}
 	
 	public void updateContent(File file, byte[] content, Credential credential) throws IOException {

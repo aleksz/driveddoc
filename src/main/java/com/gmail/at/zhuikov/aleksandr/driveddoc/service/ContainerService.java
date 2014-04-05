@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientContainer;
@@ -124,6 +125,7 @@ public class ContainerService {
 	}
 	
 	public ClientContainer createNewDDocWithFile(File file, InputStream content, Credential credential) throws IOException {
+		
 		SignedDoc container = digiDocService.createContainer(file.getTitle(),
 				file.getMimeType(),
 				gDriveService.downloadContent(file, credential));

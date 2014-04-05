@@ -29,9 +29,10 @@ public class DriveUIIntegrationServlet extends DriveUIAuthorizationServlet {
 		
 		State state = new Gson().fromJson( req.getParameter("state"), State.class);
 		
-		if (state.ids != null && state.ids.size() > 0) {
+		if ((state.ids != null && state.ids.size() > 0)) {
 			resp.sendRedirect("/#/edit/" + state.ids.toArray()[0]);
-			
+		} else if (state.exportIds != null && !state.exportIds.isEmpty()) {
+			resp.sendRedirect("/#/edit/" + state.exportIds.toArray()[0]);
 		} else if (state.folderId != null) {
 			resp.sendRedirect("/#/create/" + state.folderId);
 		}
