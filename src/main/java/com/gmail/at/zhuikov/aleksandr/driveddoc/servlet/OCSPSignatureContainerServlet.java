@@ -1,6 +1,8 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.servlet;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,7 +48,14 @@ public class OCSPSignatureContainerServlet extends DrEditServlet {
 			throws ServletException, IOException {
 
 		String password = req.getParameter("password");
-		BlobKey key = blobstoreService.getUploads(req).get("file").get(0);
+		Map<String, List<BlobKey>> uploads = blobstoreService.getUploads(req);
+		
+		if (!uploads.containsKey("file")) {
+			sendError(resp, 400, "No certificate file");
+			return;
+		}
+		
+		BlobKey key = uploads.get("file").get(0);
 
 		if (!signatureContainerService.isValid(new BlobstoreInputStream(key), password)) {
 			signatureContainerDescriptionRepository.delete(getUserId(req));
