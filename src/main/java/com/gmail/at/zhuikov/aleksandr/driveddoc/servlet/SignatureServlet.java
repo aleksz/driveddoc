@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignSession;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
@@ -27,14 +29,12 @@ public class SignatureServlet extends DrEditServlet {
 
 	private static final long serialVersionUID = 1L;
 	
-	private DigiDocService digiDocService;
-	private GDriveService gDriveService;
+	private final ContainerService containerService;
 	
 	@Inject
-	public SignatureServlet(DigiDocService digiDocService, GDriveService gDriveService, JsonFactory jsonFactory, CredentialManager credentialManager) {
+	public SignatureServlet(ContainerService containerService, JsonFactory jsonFactory, CredentialManager credentialManager) {
 		super(jsonFactory, credentialManager);
-		this.digiDocService = digiDocService;
-		this.gDriveService = gDriveService;
+		this.containerService = containerService;
 	}
 	
 	public static class SignatureRequest {
@@ -61,13 +61,10 @@ public class SignatureServlet extends DrEditServlet {
 		}
 		
 		try {
-
-			File file = gDriveService.getFile(signatureRequest.fileId, credential);
-			InputStream content = gDriveService.downloadContent(file, credential);
-			SignedDoc signedDoc = digiDocService.parseSignedDoc(content).getSignedDoc();
-			req.getSession().setAttribute("ddoc", signedDoc);
-			IdSignSession signSession = digiDocService.prepareSignature(signedDoc, signatureRequest.cert);
-			sendJson(resp, signSession);
+			
+			IdSignSession signSession = containerService.startSigning(signatureRequest.fileId, signatureRequest.cert, credential);			
+			req.getSession().setAttribute("ddoc", signSession);
+			sendJson(resp, signSession.getDigest());
 
 		} catch (GoogleJsonResponseException e) {
 			if (e.getStatusCode() == 401) {

@@ -103,7 +103,7 @@ public class DigiDocService {
 		try {
 			Signature signature = doc.prepareSignature(readCertificate(hex2bin(cert)), null, null);
 			String digest = bin2hex(signature.calculateSignedInfoDigest());
-			return new IdSignSession(signature.getId(), digest);
+			return new IdSignSession(signature.getId(), digest, doc);
 		} catch (DigiDocException e) {
 			throw new RuntimeException(e);
 		}

@@ -8,20 +8,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContainer;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.services.drive.model.File;
-import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.drive.samples.dredit.DrEditServlet;
 
-import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.SignedDoc;
 
 @Singleton
@@ -29,17 +24,14 @@ public class IdSignServlet extends DrEditServlet {
 
 	private static final long serialVersionUID = 1L;
 	
-	private DigiDocService digiDocService;
-	private GDriveService gDriveService;
+	private final ContainerService containerService;
 	SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = 
 			SignatureContainerDescriptionRepository.getInstance();
 
-	
 	@Inject
-	public IdSignServlet(DigiDocService digiDocService, GDriveService gDriveService, JsonFactory jsonFactory, CredentialManager credentialManager) {
+	public IdSignServlet(JsonFactory jsonFactory, CredentialManager credentialManager, ContainerService containerService) {
 		super(jsonFactory, credentialManager);
-		this.digiDocService = digiDocService;
-		this.gDriveService = gDriveService;
+		this.containerService = containerService;
 	}
 	
 	@Override
@@ -55,13 +47,6 @@ public class IdSignServlet extends DrEditServlet {
 			return;
 		}
 		
-		String signatureId = req.getParameter("signatureId");
-		
-		if (signatureId == null) {
-			sendError(resp, 400, "The `signatureId` URI parameter must be specified.");
-			return;
-		}
-		
 		String signatureValue = req.getParameter("signature");
 		
 		if (signatureValue == null) {
@@ -71,20 +56,10 @@ public class IdSignServlet extends DrEditServlet {
 		
 		try {
 
-			SignedDoc signedDoc = (SignedDoc) req.getSession().getAttribute("ddoc");
+			IdSignSession signSession = (IdSignSession) req.getSession().getAttribute("ddoc");
 			
-			digiDocService.finalizeSignature(
-					signedDoc, 
-					signatureId, 
-					signatureValue, 
-					getOCSPSignatureContainer(req));
+			containerService.finalizeSignature(signSession, signatureValue, getUserId(req), fileId, credential);
 			
-			try {
-				File file = gDriveService.getFile(fileId, credential);
-				gDriveService.updateContent(file, signedDoc.toXML().getBytes(), credential);
-			} catch (DigiDocException e) {
-				throw new RuntimeException(e);
-			}
 			sendJson(resp, "ok");
 
 		} catch (GoogleJsonResponseException e) {
@@ -97,15 +72,5 @@ public class IdSignServlet extends DrEditServlet {
 
 			sendGoogleJsonResponseError(resp, e);
 		}
-	}
-
-	private DigidocOCSPSignatureContainer getOCSPSignatureContainer(
-			HttpServletRequest req) throws IOException, ServletException {
-		
-		SignatureContainerDescription description = 
-				signatureContainerDescriptionRepository.get(getUserId(req));
-		
-		return new DigidocOCSPSignatureContainer(
-				new BlobstoreInputStream(description.getKey()), description);
 	}
 }

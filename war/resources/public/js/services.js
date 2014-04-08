@@ -222,14 +222,13 @@ module.factory('backend',
             		transformResponse:jsonTransform
             	});
             },
-            finalizeSignature: function(fileId, signatureId, signature) {
+            finalizeSignature: function(fileId, signature) {
             	return $http({
             		url: '/api/sign/id',
             		method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
             		params: { 
             			'file_id': fileId,
-            			'signatureId': signatureId,
             			'signature': signature
             		},
             		transformResponse:jsonTransform

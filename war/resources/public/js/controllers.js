@@ -82,16 +82,14 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 
 		$scope.step = 'waitingIdCardAuth';
 		var chosenIdCardCert;// TODO: don't like it
-		var signatureId;
 
 		idCard.getCertificate().then(function(cert) {
 			chosenIdCardCert = cert;
 			return backend.prepareSignature(doc.info.id, cert.cert)
 		}).then(function(response) {
-			signatureId = response.data.id;
-			return idCard.sign(chosenIdCardCert.id, response.data.digest);
+			return idCard.sign(chosenIdCardCert.id, response.data);
 		}).then(function(hash) {
-			return backend.finalizeSignature(doc.info.id, signatureId, hash);
+			return backend.finalizeSignature(doc.info.id, hash);
 		}).then(function() {
 			$scope.close();
 			editor.load(doc.info.id, true);

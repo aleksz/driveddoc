@@ -6,14 +6,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
+
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContainer;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientSignature;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.FileInContainer;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.drive.model.File;
+import com.google.appengine.api.blobstore.BlobstoreInputStream;
 
 import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;
@@ -27,7 +33,10 @@ public class ContainerService {
 
 	private final GDriveService gDriveService;
 	private final DigiDocService digiDocService;
+	SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = 
+			SignatureContainerDescriptionRepository.getInstance();
 	
+	@Inject
 	public ContainerService(GDriveService gDriveService, DigiDocService digiDocService) {
 		this.gDriveService = gDriveService;
 		this.digiDocService = digiDocService;
@@ -64,7 +73,35 @@ public class ContainerService {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
+	public IdSignSession startSigning(String containerFileId, String cert, Credential credential) throws IOException {
+		File file = gDriveService.getFile(containerFileId, credential);
+		InputStream content = gDriveService.downloadContent(file, credential);
+		SignedDoc signedDoc = digiDocService.parseSignedDoc(content).getSignedDoc();
+		return digiDocService.prepareSignature(signedDoc, cert);
+	}
+	
+	//TODO: amount of arguments seems wrong o_O
+	public void finalizeSignature(IdSignSession signSession, String signatureValue, String userId, String fileId, Credential credential) throws IOException {
+		
+		SignatureContainerDescription description = signatureContainerDescriptionRepository.get(userId);
+		DigidocOCSPSignatureContainer digidocOCSPSignatureContainer = new DigidocOCSPSignatureContainer(
+				new BlobstoreInputStream(description.getKey()), description);
+		
+		digiDocService.finalizeSignature(
+				signSession.getSignedDoc(), 
+				signSession.getId(), 
+				signatureValue, 
+				digidocOCSPSignatureContainer);
+		
+		try {
+			File file = gDriveService.getFile(fileId, credential);
+			gDriveService.updateContent(file, signSession.getSignedDoc().toXML().getBytes(), credential);
+		} catch (DigiDocException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	protected ClientContainer getContainer(Credential credential, File file)
 			throws IOException {
 		InputStream content = gDriveService.downloadContent(file, credential);

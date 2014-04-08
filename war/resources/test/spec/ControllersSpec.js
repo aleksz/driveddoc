@@ -86,16 +86,16 @@ define(['angular', 'angular-mocks', 'app'], function(angular) {
 		it("finalize signature if user enters correct pin", angular.mock.inject(function() {
 			idCard.getCertificate.and.returnValue(mockPromise({ cert: "a", id: "1" }));
 			idCard.sign.and.returnValue(mockPromise("hashhh"));
-			backend.prepareSignature.and.returnValue(mockPromise({ data: { id: "idd", digest: "abafdgad" }}));
+			backend.prepareSignature.and.returnValue(mockPromise({ data: "abafdgad" }));
 			scope.startIdCardSigning();
 			resolveMockPromises();
-			expect(backend.finalizeSignature).toHaveBeenCalledWith(422, "idd", "hashhh");
+			expect(backend.finalizeSignature).toHaveBeenCalledWith(422, "hashhh");
 		}));
 		
 		it("reload editor on successful signing", angular.mock.inject(function() {
 			idCard.getCertificate.and.returnValue(mockPromise({ cert: "a", id: "1" }));
 			idCard.sign.and.returnValue(mockPromise("hashhh"));
-			backend.prepareSignature.and.returnValue(mockPromise({ data: { id: "idd", digest: "abafdgad" }}));
+			backend.prepareSignature.and.returnValue(mockPromise({ data: "abafdgad" }));
 			scope.startIdCardSigning();
 			resolveMockPromises();
 			expect(editor.load).toHaveBeenCalledWith(422, true);
@@ -104,7 +104,7 @@ define(['angular', 'angular-mocks', 'app'], function(angular) {
 		it("close dialog on successful signing", angular.mock.inject(function() {
 			idCard.getCertificate.and.returnValue(mockPromise({ cert: "a", id: "1" }));
 			idCard.sign.and.returnValue(mockPromise("hashhh"));
-			backend.prepareSignature.and.returnValue(mockPromise({ data: { id: "idd", digest: "abafdgad" }}));
+			backend.prepareSignature.and.returnValue(mockPromise({ data: "abafdgad" }));
 			scope.startIdCardSigning();
 			resolveMockPromises();
 			expect(modalInstance.close).toHaveBeenCalled();

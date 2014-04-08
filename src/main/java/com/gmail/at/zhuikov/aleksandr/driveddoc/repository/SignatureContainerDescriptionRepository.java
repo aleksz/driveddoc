@@ -1,5 +1,7 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.repository;
 
+import javax.inject.Singleton;
+
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.DatastoreService;
