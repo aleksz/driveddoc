@@ -93,7 +93,7 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 		}).then(function() {
 			$scope.close();
 			editor.load(doc.info.id, true);
-			$analytics.eventTrack('Signed by ID card')
+			$analytics.eventTrack('Signed by ID card', {  category: 'sign' })
 		}, function(e) {
 			if (e instanceof IdCardException) {
 				if (e.isError()) {
