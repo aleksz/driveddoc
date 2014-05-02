@@ -13,7 +13,7 @@ require.config({
         'controllers': 'public/js/controllers',
         'services': 'public/js/services',
         'directives': 'public/js/directives',
-        'id-card': 'public/lib/idCard',
+        'id-card': 'public/lib/idCard_async',
         'boot': 'public/js/boot'
     },
     shim: {

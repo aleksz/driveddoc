@@ -14,30 +14,41 @@ module.factory('idCard', function($log, $rootScope, $q, $timeout) {
 	
 	return {
 		load: function() {
+			$log.debug("Loading IdCard plugin");
 			loadSigningPlugin("eng");
 			plugin =  new IdCardPluginHandler("eng");
+			$log.debug("IdCard plugin loaded");
 		},
 		
 		getCertificate: function() {
 			
 			var _this = this;
 			
-			return $timeout(function() {
-
-				if (!plugin) {
-					_this.load();
-				}
-				
-				return plugin.getCertificate();
-
-			}, 50);
+			if (!plugin) {
+				_this.load();
+			}
+			
+			var deferred = $q.defer();
+			
+			plugin.getCertificate(function(cert) {
+				deferred.resolve(cert);
+			}, function(ex) {
+				deferred.reject(ex);
+			});
+			
+			return deferred.promise;
 		},
 		
 		sign: function(certId, payloadHash) {
+			var deferred = $q.defer();
 			
-			return $timeout(function() {
-				return plugin.sign(certId, payloadHash);
+			plugin.sign(certId, payloadHash, function(signature) {
+				deferred.resolve(signature);
+			}, function(ex) {
+				deferred.reject(ex);
 			});
+			
+			return deferred.promise;
 		}
 	}
 });
