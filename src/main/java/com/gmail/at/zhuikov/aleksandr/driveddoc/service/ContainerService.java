@@ -32,12 +32,12 @@ public class ContainerService {
 	private static final Logger LOG = Logger.getLogger(ContainerService.class.getName());
 
 	private final GDriveService gDriveService;
-	private final DigiDocService digiDocService;
+	private final CachedDigiDocService digiDocService;
 	SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = 
 			SignatureContainerDescriptionRepository.getInstance();
 	
 	@Inject
-	public ContainerService(GDriveService gDriveService, DigiDocService digiDocService) {
+	public ContainerService(GDriveService gDriveService, CachedDigiDocService digiDocService) {
 		this.gDriveService = gDriveService;
 		this.digiDocService = digiDocService;
 	}
@@ -50,7 +50,7 @@ public class ContainerService {
 	public DataFile  getFile(String fileId, int index, Credential credential) throws IOException {
 		File file = gDriveService.getFile(fileId, credential);
 		SignedDoc signedDoc = digiDocService.parseSignedDoc(
-				gDriveService.downloadContent(file, credential)).getSignedDoc();
+				gDriveService.downloadContent(file, credential), file.getEtag()).getSignedDoc();
 	
 		return signedDoc.getDataFile(new Integer(index));
 	}
@@ -59,7 +59,7 @@ public class ContainerService {
 		File containerFile = gDriveService.getFile(containerFileId, credential);
 		
 		SignedDoc signedDoc = digiDocService.parseSignedDoc(
-				gDriveService.downloadContent(containerFile, credential)).getSignedDoc();
+				gDriveService.downloadContent(containerFile, credential), containerFile.getEtag()).getSignedDoc();
 	
 		DataFile dataFile = signedDoc.getDataFile(new Integer(index));
 		
@@ -77,7 +77,7 @@ public class ContainerService {
 	public IdSignSession startSigning(String containerFileId, String cert, Credential credential) throws IOException {
 		File file = gDriveService.getFile(containerFileId, credential);
 		InputStream content = gDriveService.downloadContent(file, credential);
-		SignedDoc signedDoc = digiDocService.parseSignedDoc(content).getSignedDoc();
+		SignedDoc signedDoc = digiDocService.parseSignedDoc(content, file.getEtag()).getSignedDoc();
 		return digiDocService.prepareSignature(signedDoc, cert);
 	}
 	
@@ -105,7 +105,7 @@ public class ContainerService {
 	protected ClientContainer getContainer(Credential credential, File file)
 			throws IOException {
 		InputStream content = gDriveService.downloadContent(file, credential);
-		return readExistingDDoc(file, digiDocService.parseSignedDoc(content).getSignedDoc());
+		return readExistingDDoc(file, digiDocService.parseSignedDoc(content, file.getEtag()).getSignedDoc());
 	}
 	
 	private ClientContainer readExistingDDoc(File file, SignedDoc signedDoc) {

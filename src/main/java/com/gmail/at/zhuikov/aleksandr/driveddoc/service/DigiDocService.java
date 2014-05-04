@@ -42,8 +42,9 @@ public class DigiDocService {
 	 * @throws IllegalArgumentException if content is not DDoc
 	 * @param content
 	 * @return
+	 * @throws IOException 
 	 */
-	public ValidatedSignedDoc parseSignedDoc(InputStream content)  {
+	public ValidatedSignedDoc parseSignedDoc(InputStream content, String id) throws IOException  {
 		
 		ArrayList<DigiDocException> warnings = new ArrayList<DigiDocException>();
 

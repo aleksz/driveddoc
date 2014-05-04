@@ -1,12 +1,13 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.SignedDoc;
 
-public class ValidatedSignedDoc {
+public class ValidatedSignedDoc implements Serializable {
 
 	private SignedDoc signedDoc;
 	private Collection<DigiDocException> warnings = new ArrayList<>();

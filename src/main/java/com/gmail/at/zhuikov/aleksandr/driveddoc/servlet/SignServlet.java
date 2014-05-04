@@ -70,7 +70,7 @@ public class SignServlet extends DrEditServlet {
 
 			File file = gDriveService.getFile(fileId, credential);
 			InputStream content = gDriveService.downloadContent(file, credential);
-			SignedDoc signedDoc = digiDocService.parseSignedDoc(content).getSignedDoc();
+			SignedDoc signedDoc = digiDocService.parseSignedDoc(content, file.getEtag()).getSignedDoc();
 			SignSession signSession = digiDocService.requestMobileIdSignature(
 					signedDoc, personalId, phoneNumber);
 			
@@ -109,7 +109,7 @@ public class SignServlet extends DrEditServlet {
 		
 		File file = gDriveService.getFile(fileId, credential);
 		InputStream content = gDriveService.downloadContent(file, credential);
-		SignedDoc signedDoc = digiDocService.parseSignedDoc(content).getSignedDoc();
+		SignedDoc signedDoc = digiDocService.parseSignedDoc(content, file.getEtag()).getSignedDoc();
 		String status = digiDocService.getMobileIdSignatureStatus(signedDoc, sessionId);
 		
 		if (STAT_SIGNATURE.equals(status)) {

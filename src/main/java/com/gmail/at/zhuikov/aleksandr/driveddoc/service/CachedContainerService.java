@@ -19,7 +19,7 @@ public class CachedContainerService extends ContainerService {
 	
 	@Inject
 	public CachedContainerService(GDriveService gDriveService,
-			DigiDocService digiDocService) {
+			CachedDigiDocService digiDocService) {
 		super(gDriveService, digiDocService);
 	}
 
