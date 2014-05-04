@@ -15,8 +15,6 @@
 package com.google.drive.samples.dredit;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -35,8 +33,6 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.util.IOUtils;
 import com.google.api.services.drive.model.File;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;
@@ -62,12 +58,7 @@ public class FileServlet extends DrEditServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws IOException, ServletException {
 	  
-    String fileId = req.getParameter("file_id");
-
-    if (fileId == null) {
-      sendError(resp, 400, "The `file_id` URI parameter must be specified.");
-      return;
-    }
+	  String fileId = req.getRequestURI().split("/")[3];
     
     try {
     	
@@ -102,10 +93,8 @@ public class FileServlet extends DrEditServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		Map<String, String> params = new Gson().fromJson(req.getReader(), new TypeToken<HashMap<String, String>>() {}.getType());
-
-		String fileId = params.get("file_id");
-
+		String fileId = req.getRequestURI().split("/")[3];
+		
 		if (fileId == null) {
 			sendError(resp, 400, "The `file_id` URI parameter must be specified.");
 			return;
