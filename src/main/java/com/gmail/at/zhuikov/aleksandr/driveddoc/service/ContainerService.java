@@ -1,5 +1,7 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 
+import static ee.sk.digidoc.factory.DigiDocServiceFactory.STAT_SIGNATURE;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,6 +14,7 @@ import javax.inject.Inject;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientSignature;
@@ -49,19 +52,19 @@ public class ContainerService {
 	
 	public DataFile  getFile(String fileId, int index, Credential credential) throws IOException {
 		File file = gDriveService.getFile(fileId, credential);
-		SignedDoc signedDoc = digiDocService.parseSignedDoc(
-				gDriveService.downloadContent(file, credential), file.getEtag()).getSignedDoc();
+		return parseSignedDoc(file, credential).getDataFile(new Integer(index));
+	}
 	
-		return signedDoc.getDataFile(new Integer(index));
+	private SignedDoc parseSignedDoc(File file, Credential credential) throws IOException {
+		return digiDocService.parseSignedDoc(
+				file.getTitle(),
+				file.getEtag(),
+				gDriveService.downloadContent(file, credential)).getSignedDoc();
 	}
 	
 	public void saveFileToDrive(String containerFileId, int index, Credential credential) throws IOException {
 		File containerFile = gDriveService.getFile(containerFileId, credential);
-		
-		SignedDoc signedDoc = digiDocService.parseSignedDoc(
-				gDriveService.downloadContent(containerFile, credential), containerFile.getEtag()).getSignedDoc();
-	
-		DataFile dataFile = signedDoc.getDataFile(new Integer(index));
+		DataFile dataFile = parseSignedDoc(containerFile, credential).getDataFile(new Integer(index));
 		
 		File file = new File();
 		file.setTitle(dataFile.getFileName());
@@ -74,11 +77,32 @@ public class ContainerService {
 		}
 	}
 	
+	public SignSession startSigningWithMobileId(String fileId, String personalId, String phoneNumber, Credential credential) throws IOException {
+		File file = gDriveService.getFile(fileId, credential);
+		SignedDoc signedDoc = parseSignedDoc(file, credential);
+		return digiDocService.requestMobileIdSignature(
+				signedDoc, personalId, phoneNumber);
+	}
+	
+	public String checkMobileIdSignStatus(String fileId, String sessionId, Credential credential) throws IOException {
+		File file = gDriveService.getFile(fileId, credential);
+		SignedDoc signedDoc = parseSignedDoc(file, credential);
+		String status = digiDocService.getMobileIdSignatureStatus(signedDoc, sessionId);
+		
+		if (STAT_SIGNATURE.equals(status)) {
+			try {
+				gDriveService.updateContent(file, signedDoc.toXML().getBytes(), credential);
+			} catch (DigiDocException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		return status;
+	}
+	
 	public IdSignSession startSigning(String containerFileId, String cert, Credential credential) throws IOException {
 		File file = gDriveService.getFile(containerFileId, credential);
-		InputStream content = gDriveService.downloadContent(file, credential);
-		SignedDoc signedDoc = digiDocService.parseSignedDoc(content, file.getEtag()).getSignedDoc();
-		return digiDocService.prepareSignature(signedDoc, cert);
+		return digiDocService.prepareSignature(parseSignedDoc(file, credential), cert);
 	}
 	
 	//TODO: amount of arguments seems wrong o_O
@@ -104,8 +128,7 @@ public class ContainerService {
 	
 	protected ClientContainer getContainer(Credential credential, File file)
 			throws IOException {
-		InputStream content = gDriveService.downloadContent(file, credential);
-		return readExistingDDoc(file, digiDocService.parseSignedDoc(content, file.getEtag()).getSignedDoc());
+		return readExistingDDoc(file, parseSignedDoc(file, credential));
 	}
 	
 	private ClientContainer readExistingDDoc(File file, SignedDoc signedDoc) {

@@ -8,15 +8,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URLEncoder;
 import java.nio.channels.Channels;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import javax.inject.Singleton;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ValidatedSignedDoc;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
 import com.google.appengine.tools.cloudstorage.GcsInputChannel;
@@ -32,22 +28,22 @@ public class CachedDigiDocService extends DigiDocService {
 	private static final Logger LOG = Logger.getLogger(CachedDigiDocService.class.getName());
 
 	private final GcsService gcsService =  GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
-	private final ExecutorService pool = Executors.newFixedThreadPool(10);
 	
 	@Override
-	public ValidatedSignedDoc parseSignedDoc(InputStream content, String id) throws IOException  {
+	public ValidatedSignedDoc parseSignedDoc(String fileName, String id, InputStream content) throws IOException  {
 		
-		String fileName = URLEncoder.encode(id.replaceAll("\"", ""), "UTF-8");
+		String cacheKey = URLEncoder.encode(id.replaceAll("\"", ""), "UTF-8");
 		
-		GcsFilename gcsFileName = new GcsFilename(BUCKET, fileName);
+		GcsFilename gcsFileName = new GcsFilename(BUCKET, cacheKey);
 
 		if (gcsService.getMetadata(gcsFileName) != null) {
-			LOG.fine("Cache hit for " + fileName);
+			LOG.fine("Cache hit for " + cacheKey);
 			return readFromCache(gcsFileName);
 		}
 		
-		LOG.fine("Cache miss for " + fileName);
-		ValidatedSignedDoc signedDoc = super.parseSignedDoc(content, id);
+		LOG.fine("Cache miss for " + cacheKey);
+		
+		ValidatedSignedDoc signedDoc = super.parseSignedDoc(fileName, id, content);
 		cache(gcsFileName, signedDoc);
 		
 		return signedDoc;

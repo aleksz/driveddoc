@@ -44,16 +44,16 @@ public class DigiDocService {
 	 * @return
 	 * @throws IOException 
 	 */
-	public ValidatedSignedDoc parseSignedDoc(InputStream content, String id) throws IOException  {
+	public ValidatedSignedDoc parseSignedDoc(String fileName,  String id,  InputStream content) throws IOException  {
 		
 		ArrayList<DigiDocException> warnings = new ArrayList<DigiDocException>();
 
 		try {
 			DigiDocFactory factory = ConfigManager.instance().getDigiDocFactory();
-			SignedDoc doc = factory.readSignedDocFromStreamOfType(content, false, warnings);
+			SignedDoc doc = factory.readSignedDocFromStreamOfType(content, factory.isBdocExtension(fileName), warnings);
 			
 			if (doc == null) {
-				throw new IllegalArgumentException("content is not a DigiDoc");
+				throw new IllegalArgumentException("content is not a ddoc/bdoc: " + warnings);
 			}
 			
 			return new ValidatedSignedDoc(doc, warnings);

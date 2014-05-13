@@ -1,5 +1,8 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 
+import static ee.sk.digidoc.SignedDoc.BDOC_PROFILE_TM;
+import static ee.sk.digidoc.SignedDoc.BDOC_VERSION_2_1;
+import static ee.sk.digidoc.SignedDoc.FORMAT_BDOC;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -8,7 +11,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,8 +62,17 @@ public class DigiDocServiceTest extends MockitoTest {
 	}
 	
 	@Test
+	public void parsesBDoc() throws IOException {
+		ValidatedSignedDoc doc = service.parseSignedDoc("test.bdoc", "id", getClass().getResourceAsStream("/test.bdoc"));
+		assertNotNull(doc);
+		assertNotNull(doc.getSignedDoc());
+		assertTrue(doc.getWarnings().isEmpty());
+		assertFalse(doc.getSignedDoc().getDataFiles().isEmpty());
+	}
+	
+	@Test
 	public void parsesPreThreeDotEightDigiDoc() throws IOException {
-		ValidatedSignedDoc doc = service.parseSignedDoc(getClass().getResourceAsStream("/pre_3_8.ddoc"), "id");
+		ValidatedSignedDoc doc = service.parseSignedDoc("pre_3_8.ddoc", "id", getClass().getResourceAsStream("/pre_3_8.ddoc"));
 		assertNotNull(doc);
 		assertNotNull(doc.getSignedDoc());
 		assertTrue(doc.getWarnings().isEmpty());
@@ -65,7 +81,7 @@ public class DigiDocServiceTest extends MockitoTest {
 	
 	@Test
 	public void parsesPreThreeDotEightSignedDigiDoc() throws IOException {
-		ValidatedSignedDoc doc = service.parseSignedDoc(getClass().getResourceAsStream("/pre_3_8_signed.ddoc"), "id");
+		ValidatedSignedDoc doc = service.parseSignedDoc("/pre_3_8_signed.ddoc", "id", getClass().getResourceAsStream("/pre_3_8_signed.ddoc"));
 		assertNotNull(doc);
 		assertNotNull(doc.getSignedDoc());
 		assertFalse(doc.getSignedDoc().getDataFiles().isEmpty());
@@ -73,13 +89,13 @@ public class DigiDocServiceTest extends MockitoTest {
 	
 	@Test
 	public void returnsWarningForPreThreeDotEightSignedDigiDoc() throws IOException {
-		ValidatedSignedDoc doc = service.parseSignedDoc(getClass().getResourceAsStream("/pre_3_8_signed.ddoc"), "id");
+		ValidatedSignedDoc doc = service.parseSignedDoc("pre_3_8_signed.ddoc", "id", getClass().getResourceAsStream("/pre_3_8_signed.ddoc"));
 		System.out.println(doc.getWarnings());
 		assertFalse(doc.getWarnings().isEmpty());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void throwsExceptionWhenParsingNonDigiDocFile() throws IOException {
-		 service.parseSignedDoc(getClass().getResourceAsStream("/504950.p12d"), "id");
+		 service.parseSignedDoc("504950.p12d", "id", getClass().getResourceAsStream("/504950.p12d"));
 	}
 }
