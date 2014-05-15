@@ -76,6 +76,7 @@ dependencies {
 	compile 'org.apache.commons:commons-compress:1.6'
 	compile 'commons-codec:commons-codec:1.9'
 	compile 'org.bouncycastle:bcprov-jdk15on:1.50'
+	compile 'org.bouncycastle:bctsp-jdk15on:1.46'
 }
 
 task startFakeSSL {

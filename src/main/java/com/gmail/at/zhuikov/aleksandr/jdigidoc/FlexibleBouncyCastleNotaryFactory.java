@@ -1,4 +1,4 @@
-package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
+package com.gmail.at.zhuikov.aleksandr.jdigidoc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;

@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientContainer;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.drive.model.File;
 import com.google.appengine.api.memcache.AsyncMemcacheService;
@@ -19,8 +20,9 @@ public class CachedContainerService extends ContainerService {
 	
 	@Inject
 	public CachedContainerService(GDriveService gDriveService,
-			CachedDigiDocService digiDocService) {
-		super(gDriveService, digiDocService);
+			CachedDigiDocService digiDocService,
+			SignatureContainerDescriptionRepository signatureContainerDescriptionRepository) {
+		super(gDriveService, digiDocService, signatureContainerDescriptionRepository);
 	}
 
 	@Override

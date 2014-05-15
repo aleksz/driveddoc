@@ -36,13 +36,14 @@ public class ContainerService {
 
 	private final GDriveService gDriveService;
 	private final CachedDigiDocService digiDocService;
-	SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = 
-			SignatureContainerDescriptionRepository.getInstance();
+	private final SignatureContainerDescriptionRepository signatureContainerDescriptionRepository;
 	
 	@Inject
-	public ContainerService(GDriveService gDriveService, CachedDigiDocService digiDocService) {
+	public ContainerService(GDriveService gDriveService, CachedDigiDocService digiDocService, 
+			SignatureContainerDescriptionRepository signatureContainerDescriptionRepository) {
 		this.gDriveService = gDriveService;
 		this.digiDocService = digiDocService;
+		this.signatureContainerDescriptionRepository = signatureContainerDescriptionRepository;
 	}
 	
 	public ClientContainer getContainer(String fileId, Credential credential) throws IOException {
@@ -110,7 +111,8 @@ public class ContainerService {
 		
 		SignatureContainerDescription description = signatureContainerDescriptionRepository.get(userId);
 		DigidocOCSPSignatureContainer digidocOCSPSignatureContainer = new DigidocOCSPSignatureContainer(
-				new BlobstoreInputStream(description.getKey()), description);
+				signatureContainerDescriptionRepository.getContent(description), 
+				description);
 		
 		digiDocService.finalizeSignature(
 				signSession.getSignedDoc(), 
@@ -120,7 +122,9 @@ public class ContainerService {
 		
 		try {
 			File file = gDriveService.getFile(fileId, credential);
-			gDriveService.updateContent(file, signSession.getSignedDoc().toXML().getBytes(), credential);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			signSession.getSignedDoc().writeToStream(out);
+			gDriveService.updateContent(file, out.toByteArray(), credential);
 		} catch (DigiDocException e) {
 			throw new RuntimeException(e);
 		}

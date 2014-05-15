@@ -24,17 +24,18 @@ import com.google.drive.samples.dredit.DrEditServlet;
 @Singleton
 public class OCSPSignatureContainerServlet extends DrEditServlet {
 
-	@Inject
-	public OCSPSignatureContainerServlet(JsonFactory jsonFactory, CredentialManager credentialManager) {
-		super(jsonFactory, credentialManager);
-	}
-
 	private static final long serialVersionUID = 1L;
 
 	BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
-	SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = 
-			SignatureContainerDescriptionRepository.getInstance();
+	private final SignatureContainerDescriptionRepository signatureContainerDescriptionRepository;
 	SignatureContainerService signatureContainerService = SignatureContainerService.getInstance(); 
+	
+	@Inject
+	public OCSPSignatureContainerServlet(JsonFactory jsonFactory, CredentialManager credentialManager,
+			SignatureContainerDescriptionRepository signatureContainerDescriptionRepository) {
+		super(jsonFactory, credentialManager);
+		this.signatureContainerDescriptionRepository = signatureContainerDescriptionRepository;
+	}
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)

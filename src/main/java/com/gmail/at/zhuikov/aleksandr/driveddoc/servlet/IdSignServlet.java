@@ -17,21 +17,21 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.JsonFactory;
 import com.google.drive.samples.dredit.DrEditServlet;
 
-import ee.sk.digidoc.SignedDoc;
-
 @Singleton
 public class IdSignServlet extends DrEditServlet {
 
 	private static final long serialVersionUID = 1L;
 	
 	private final ContainerService containerService;
-	SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = 
-			SignatureContainerDescriptionRepository.getInstance();
+	private final SignatureContainerDescriptionRepository signatureContainerDescriptionRepository;
 
 	@Inject
-	public IdSignServlet(JsonFactory jsonFactory, CredentialManager credentialManager, ContainerService containerService) {
+	public IdSignServlet(JsonFactory jsonFactory, CredentialManager credentialManager, 
+			ContainerService containerService, 
+			SignatureContainerDescriptionRepository signatureContainerDescriptionRepository) {
 		super(jsonFactory, credentialManager);
 		this.containerService = containerService;
+		this.signatureContainerDescriptionRepository = signatureContainerDescriptionRepository;
 	}
 	
 	@Override

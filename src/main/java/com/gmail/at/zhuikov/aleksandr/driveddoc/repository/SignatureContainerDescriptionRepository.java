@@ -1,9 +1,13 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.repository;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.inject.Singleton;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -11,21 +15,11 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
+@Singleton
 public class SignatureContainerDescriptionRepository {
 	
 	private static final String KIND = "OCSPKeyRepository";
 	
-	private static SignatureContainerDescriptionRepository instance;
-	
-	public static SignatureContainerDescriptionRepository getInstance() {
-		
-		if (instance == null) {
-			instance = new SignatureContainerDescriptionRepository();
-		}
-		
-		return instance;
-	}
-
 	public void store(SignatureContainerDescription description) {
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	    Entity entity = new Entity(KIND, description.getUserId());
@@ -46,6 +40,10 @@ public class SignatureContainerDescriptionRepository {
 		} catch (EntityNotFoundException e) {
 			return null;
 		}
+	}
+	
+	public InputStream getContent(SignatureContainerDescription description) throws IOException {
+		return new BlobstoreInputStream(description.getKey());
 	}
 
 	public void delete(String userId) {

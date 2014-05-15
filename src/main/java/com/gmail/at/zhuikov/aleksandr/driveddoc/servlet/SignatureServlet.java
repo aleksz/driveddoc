@@ -1,7 +1,6 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.servlet;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -10,19 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.service.DigiDocService;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.service.GDriveService;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.services.drive.model.File;
 import com.google.drive.samples.dredit.DrEditServlet;
 import com.google.gson.Gson;
-
-import ee.sk.digidoc.SignedDoc;
 
 @Singleton
 public class SignatureServlet extends DrEditServlet {

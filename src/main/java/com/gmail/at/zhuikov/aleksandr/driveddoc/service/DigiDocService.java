@@ -19,6 +19,7 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContai
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ValidatedSignedDoc;
+import com.gmail.at.zhuikov.aleksandr.jdigidoc.FlexibleBouncyCastleNotaryFactory;
 
 import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;

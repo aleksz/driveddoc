@@ -1,8 +1,5 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 
-import static ee.sk.digidoc.SignedDoc.BDOC_PROFILE_TM;
-import static ee.sk.digidoc.SignedDoc.BDOC_VERSION_2_1;
-import static ee.sk.digidoc.SignedDoc.FORMAT_BDOC;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -11,12 +8,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -47,7 +41,6 @@ public class DigiDocServiceTest extends MockitoTest {
 		assertNotNull(container.getDataFile(0));
 		assertEquals(content, container.getDataFile(0).getBodyAsString());
 		assertTrue(container.getDataFile(0).getSize() > 0);
-		container.writeToStream(System.out);
 	}
 	
 	@Test
@@ -69,6 +62,15 @@ public class DigiDocServiceTest extends MockitoTest {
 		assertTrue(doc.getWarnings().isEmpty());
 		assertFalse(doc.getSignedDoc().getDataFiles().isEmpty());
 	}
+	
+	@Test
+	public void parsesBDocWithSignature() throws IOException {
+		ValidatedSignedDoc doc = service.parseSignedDoc("test_with_signature.bdoc", "id", getClass().getResourceAsStream("/test_with_signature.bdoc"));
+		assertNotNull(doc);
+		assertNotNull(doc.getSignedDoc());
+		assertTrue(doc.getWarnings().isEmpty());
+		assertFalse(doc.getSignedDoc().getDataFiles().isEmpty());
+	}	
 	
 	@Test
 	public void parsesPreThreeDotEightDigiDoc() throws IOException {

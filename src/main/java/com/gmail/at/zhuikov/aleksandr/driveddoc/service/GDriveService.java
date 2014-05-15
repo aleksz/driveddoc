@@ -71,6 +71,7 @@ public class GDriveService {
 		}
 		
 		return file.getDownloadUrl();
+	
 	}
 	
 	public void updateContent(File file, byte[] content, Credential credential) throws IOException {
