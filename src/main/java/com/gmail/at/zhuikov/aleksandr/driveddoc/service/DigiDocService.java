@@ -1,5 +1,7 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 
+import static ee.sk.digidoc.SignedDoc.BDOC_PROFILE_TM;
+import static ee.sk.digidoc.SignedDoc.FORMAT_BDOC;
 import static ee.sk.digidoc.SignedDoc.bin2hex;
 import static ee.sk.digidoc.SignedDoc.hex2bin;
 import static ee.sk.digidoc.SignedDoc.readCertificate;
@@ -8,12 +10,14 @@ import static ee.sk.digidoc.factory.DigiDocServiceFactory.STAT_OUTSTANDING_TRANS
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.inject.Singleton;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
@@ -103,7 +107,13 @@ public class DigiDocService {
 	
 	public IdSignSession prepareSignature(SignedDoc doc, String cert) {
 		try {
+			Security.addProvider(new BouncyCastleProvider());//TODO: should not be registered in every other place
 			Signature signature = doc.prepareSignature(readCertificate(hex2bin(cert)), null, null);
+			
+			if (FORMAT_BDOC.equals(doc.getFormat())) {//WTF?!
+				signature.setProfile(BDOC_PROFILE_TM);
+			}
+			
 			String digest = bin2hex(signature.calculateSignedInfoDigest());
 			return new IdSignSession(signature.getId(), digest, doc);
 		} catch (DigiDocException e) {

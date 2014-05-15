@@ -16,6 +16,7 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.model.DigidocOCSPSignatureContai
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignSession;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ValidatedSignedDoc;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.ClientSignature;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.FileInContainer;
@@ -57,10 +58,12 @@ public class ContainerService {
 	}
 	
 	private SignedDoc parseSignedDoc(File file, Credential credential) throws IOException {
-		return digiDocService.parseSignedDoc(
+		ValidatedSignedDoc parsedSignedDoc = digiDocService.parseSignedDoc(
 				file.getTitle(),
 				file.getEtag(),
-				gDriveService.downloadContent(file, credential)).getSignedDoc();
+				gDriveService.downloadContent(file, credential));
+		
+		return parsedSignedDoc.getSignedDoc();
 	}
 	
 	public void saveFileToDrive(String containerFileId, int index, Credential credential) throws IOException {
