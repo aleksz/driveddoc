@@ -7,7 +7,12 @@
 				<h4 class="modal-title">Choose signing method</h4>
 			</div>
 			<div class="modal-body text-center">
-				<!-- <button type="button" class="btn btn-primary btn-lg" x-ng-click="chooseMobileId()">Mobile ID</button> -->
+				<button type="button"
+						class="btn btn-primary btn-lg"
+						x-ng-click="chooseMobileId()"
+						x-analytics-on="click"
+            			analytics-category="buttons"
+            			x-analytics-event="Choose MobileID card">Mobile ID</button>
 				<button type="button" 
 						class="btn btn-primary btn-lg" 
 						x-ng-click="chooseIdCard()"
@@ -32,36 +37,38 @@
 					aria-hidden="true">&times;</button>
 				<h4 class="modal-title">Enter phone number and personal id</h4>
 			</div>
-				<form class="form-horizontal" role="form" x-ng-submit="startSigning()">
-			<div class="modal-body">
-					<div class="form-group">
-						<label for="phoneNumberInput" class="col-lg-3 control-label">Phone number</label>
-						<div class="col-lg-9">
-							<input type="text" 
-								pattern="^\+(?:[0-9] ?){6,14}[0-9]$" 
-								class="form-control" 
-								id="phoneNumberInput" 
-								required="required"
-								x-ng-model="form.phoneNumber"
-								placeholder="Phone (eg +372xxxxxxxx)">
-						</div>
+				<form name="form" class="form-horizontal" role="form" x-ng-submit="startSigning()">
+					<div class="modal-body">
+							<div class="form-group">
+								<label for="phoneNumberInput" class="col-lg-3 control-label">Phone number</label>
+								<div class="col-lg-9">
+									<input type="text" 
+										pattern="^\+(?:[0-9] ?){6,14}[0-9]$" 
+										class="form-control" 
+										id="phoneNumberInput" 
+										name="phoneNumberInput"
+										required="required"
+										x-ng-model="mobileIdForm.phoneNumber"
+										placeholder="Phone (eg +372xxxxxxxx)">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="personalIdInput" class="col-lg-3 control-label">Personal id</label>
+								<div class="col-lg-9">
+									<input type="text" 
+										class="form-control" 
+										id="personalIdInput"
+										name="personalIdInput"
+										pattern="\d{11}"
+										x-ng-model="mobileIdForm.personalId"
+										placeholder="Personal id">
+								</div>
+							</div>
 					</div>
-					<div class="form-group">
-						<label for="personalIdInput" class="col-lg-3 control-label">Personal id</label>
-						<div class="col-lg-9">
-							<input type="text" 
-								class="form-control" 
-								id="personalIdInput"
-								pattern="\d{11}"
-								x-ng-model="form.personalId"
-								placeholder="Personal id">
-						</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" x-ng-click="cancel()">Cancel</button>
+						<button type="submit" class="btn btn-primary">Sign</button>
 					</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" x-ng-click="cancel()">Cancel</button>
-				<button type="submit" class="btn btn-primary">Sign</button>
-			</div>
 				</form>
 		</div>
 		<div class="modal-content" x-ng-show="step == 'mobileIdPoll'">

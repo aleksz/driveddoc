@@ -108,6 +108,7 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 		});
 	}
 
+	$scope.mobileIdForm = {};
 	$scope.form = {};
 	$scope.signatureContainer = {};
 
@@ -133,8 +134,8 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 
 		$scope.step = 'mobileIdPoll';
 
-		backend.startSigning(doc.info.id, $scope.form.personalId,
-				$scope.form.phoneNumber).then(function(response) {
+		backend.startSigning(doc.info.id, $scope.mobileIdForm.personalId,
+				$scope.mobileIdForm.phoneNumber).then(function(response) {
 
 			if ($scope.cancelled) {
 				return;
