@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.IdSignSession;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.ContainerService;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
 import com.google.api.client.auth.oauth2.Credential;
@@ -23,15 +22,12 @@ public class IdSignServlet extends DrEditServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private final ContainerService containerService;
-	private final SignatureContainerDescriptionRepository signatureContainerDescriptionRepository;
 
 	@Inject
 	public IdSignServlet(JsonFactory jsonFactory, CredentialManager credentialManager, 
-			ContainerService containerService, 
-			SignatureContainerDescriptionRepository signatureContainerDescriptionRepository) {
+			ContainerService containerService) {
 		super(jsonFactory, credentialManager);
 		this.containerService = containerService;
-		this.signatureContainerDescriptionRepository = signatureContainerDescriptionRepository;
 	}
 	
 	@Override
