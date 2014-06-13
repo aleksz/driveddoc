@@ -23,7 +23,6 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.model.container.FileInContainer;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.drive.model.File;
-import com.google.appengine.api.blobstore.BlobstoreInputStream;
 
 import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;
@@ -112,7 +111,9 @@ public class ContainerService {
 	//TODO: amount of arguments seems wrong o_O
 	public void finalizeSignature(IdSignSession signSession, String signatureValue, String userId, String fileId, Credential credential) throws IOException {
 		
-		SignatureContainerDescription description = signatureContainerDescriptionRepository.get(userId);
+//		SignatureContainerDescription description = signatureContainerDescriptionRepository.get(userId);
+		SignatureContainerDescription description = signatureContainerDescriptionRepository.get("master");
+		
 		DigidocOCSPSignatureContainer digidocOCSPSignatureContainer = new DigidocOCSPSignatureContainer(
 				signatureContainerDescriptionRepository.getContent(description), 
 				description);

@@ -14,6 +14,7 @@ import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescript
 import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.CredentialManager;
 import com.gmail.at.zhuikov.aleksandr.driveddoc.service.SignatureContainerService;
+import com.gmail.at.zhuikov.aleksandr.driveddoc.service.UserService;
 import com.google.api.client.json.JsonFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
@@ -26,15 +27,17 @@ public class OCSPSignatureContainerServlet extends DrEditServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+	private final BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 	private final SignatureContainerDescriptionRepository signatureContainerDescriptionRepository;
-	SignatureContainerService signatureContainerService = SignatureContainerService.getInstance(); 
+	private final SignatureContainerService signatureContainerService = SignatureContainerService.getInstance(); 
+	private final UserService userService;
 	
 	@Inject
 	public OCSPSignatureContainerServlet(JsonFactory jsonFactory, CredentialManager credentialManager,
-			SignatureContainerDescriptionRepository signatureContainerDescriptionRepository) {
+			SignatureContainerDescriptionRepository signatureContainerDescriptionRepository, UserService userService) {
 		super(jsonFactory, credentialManager);
 		this.signatureContainerDescriptionRepository = signatureContainerDescriptionRepository;
+		this.userService = userService;
 	}
 	
 	@Override
@@ -64,10 +67,24 @@ public class OCSPSignatureContainerServlet extends DrEditServlet {
 			return;
 		}
 		
+		if (!checkMasterPermission(req)) {
+			sendError(resp, 403, "Wrong permissions");
+			return;
+		}
+		
 		signatureContainerDescriptionRepository.store(new SignatureContainerDescription(
 				key, 
 				password, 
-				getUserId(req)));
+				isMaster(req) ? "master" : getUserId(req)));
+	}
+	
+	private boolean checkMasterPermission(HttpServletRequest req) throws IOException, ServletException {
+		return "aleksandr.zhuikov@gmail.com".equals(
+				userService.getUserInfo(getUserId(req), getCredential()).getEmail()); //TODO: this is awful :)
+	}
+	
+	private boolean isMaster(HttpServletRequest request) {
+		return request.getParameter("master") != null;
 	}
 	
 	@Override

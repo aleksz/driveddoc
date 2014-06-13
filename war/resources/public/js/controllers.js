@@ -41,6 +41,28 @@ module.controller('EditorCtrl', ['$scope', '$routeParams', 'editor', 'doc', '$mo
 	}
 } ]);
 
+module.controller('AdminController', ['$scope', 'backend', '$log',
+                            		function($scope, backend, $log) {
+	
+	$scope.signatureContainer = {};
+	$scope.form = {};
+	
+	$scope.storeKey = function() {
+
+		backend.getOCSPUploadUrl().then(function(response) {
+			$log.info("Uploading OCSP signature container " + response.data);
+			var formData = new FormData();
+			formData.append("password", $scope.signatureContainer.pass);
+			formData.append("master", true);
+			formData.append("file", $scope.ocspCertFile);
+			return backend.uploadOCSPKey(response.data, formData);
+		}).then(function() {
+			$log.info("OCSP signature container uploaded");
+		});
+	}
+	
+}]);
+
 module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
                             		'$log', 'editor', '$rootScope', 'idCard', '$modalInstance', '$analytics',
                             		function($scope, backend, doc, $timeout, $log, editor, 
@@ -68,14 +90,16 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 	}
 
 	$scope.chooseIdCard = function() {
-		backend.getOCSPSignatureContainer().then(function(response) {
-			$log.info(response.data);
-			if (response.data) {// TODO fix check
-				$scope.startIdCardSigning();
-			} else {
-				$scope.step = 'ocspCert';
-			}
-		});
+// backend.getOCSPSignatureContainer().then(function(response) {
+// $log.info(response.data);
+// if (response.data) {// TODO fix check
+// $scope.startIdCardSigning();
+// } else {
+// $scope.step = 'ocspCert';
+// }
+// });
+		
+		$scope.startIdCardSigning();
 	}
 
 	$scope.startIdCardSigning = function() {

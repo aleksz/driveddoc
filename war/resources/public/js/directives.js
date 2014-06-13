@@ -49,7 +49,7 @@ module.directive('file', function($rootScope, $log) {
                 		ngModel.$setValidity('accept', false);
                 	} else {
                 		ngModel.$setValidity('accept', true);
-                		$scope.$parent[attrs["id"]] = file;
+                		$scope/*.$parent*/[attrs["id"]] = file;
                 	}
                 });
             });

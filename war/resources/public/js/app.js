@@ -18,6 +18,9 @@ define(['angular', 'services', 'directives', 'controllers', 'angular-route',
 		$routeProvider.when('/edit/:id', {
 			templateUrl: '/public/partials/editor.html',
 			controller: 'EditorCtrl'
+		}).when('/admin', {
+			templateUrl: '/public/partials/ocspSignatureForm.html',
+			controller: 'AdminController'
 		});
 	
 	}]).config(['$httpProvider', function ($httpProvider) {
