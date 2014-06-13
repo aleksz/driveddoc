@@ -3,6 +3,7 @@ package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.User;
 import com.google.api.client.auth.oauth2.Credential;
@@ -11,6 +12,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
 
+@Singleton
 public class UserService {
 
 	private HttpTransport transport;
