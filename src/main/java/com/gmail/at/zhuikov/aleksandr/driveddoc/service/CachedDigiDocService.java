@@ -19,6 +19,7 @@ import com.google.appengine.tools.cloudstorage.GcsInputChannel;
 import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.RetryHelperException;
 import com.google.appengine.tools.cloudstorage.RetryParams;
 
 @Singleton
@@ -57,7 +58,7 @@ public class CachedDigiDocService extends DigiDocService {
 				oout.writeObject(signedDoc);
 			}
 			LOG.fine("Cached " + gcsFileName.getObjectName());
-		} catch (IOException e) {
+		} catch (IOException|RetryHelperException e) {
 			LOG.log(WARNING, "Failed to cache " + gcsFileName.getObjectName(), e);
 		}
 	}
