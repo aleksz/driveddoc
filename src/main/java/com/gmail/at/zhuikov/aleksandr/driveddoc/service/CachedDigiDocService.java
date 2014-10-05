@@ -58,7 +58,10 @@ public class CachedDigiDocService extends DigiDocService {
 				oout.writeObject(signedDoc);
 			}
 			LOG.fine("Cached " + gcsFileName.getObjectName());
-		} catch (IOException|RetryHelperException e) {
+		} catch (RetryHelperException e) {
+			LOG.log(WARNING, "Failed to cache " + gcsFileName.getObjectName(), e);
+			gcsService.delete(gcsFileName);
+		} catch (IOException e) {
 			LOG.log(WARNING, "Failed to cache " + gcsFileName.getObjectName(), e);
 		}
 	}
