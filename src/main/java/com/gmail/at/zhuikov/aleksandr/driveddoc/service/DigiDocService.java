@@ -14,6 +14,7 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.compress.utils.IOUtils;
@@ -31,7 +32,6 @@ import ee.sk.digidoc.Signature;
 import ee.sk.digidoc.SignedDoc;
 import ee.sk.digidoc.factory.DigiDocFactory;
 import ee.sk.digidoc.factory.DigiDocGenFactory;
-import ee.sk.digidoc.factory.DigiDocServiceFactory;
 import ee.sk.utils.ConfigManager;
 
 @Singleton
@@ -39,7 +39,11 @@ public class DigiDocService {
 
 	private static final Logger LOG = Logger.getLogger(DigiDocService.class.getName());
 	
-	public DigiDocService() {
+	private final MobileIdService mobileIdService;
+	
+	@Inject
+	public DigiDocService(MobileIdService mobileIdService) {
+		this.mobileIdService = mobileIdService;
 		ConfigManager.init("jar://jdigidoc.cfg");
 	}
 	
@@ -73,12 +77,12 @@ public class DigiDocService {
 		
 		try {
 			StringBuffer challenge = new StringBuffer();
-			String sessionId = DigiDocServiceFactory.ddsSign(
+			String sessionId = mobileIdService.startSigningSession(
 					doc, 
 					personalId,
 					phoneNumber,
 					"ENG", 
-					"Testimine",//TODO: use correct service name 
+					"Drive DigiDoc",
 					"", 
 					"", 
 					"", 
@@ -99,7 +103,7 @@ public class DigiDocService {
 
 	public String getMobileIdSignatureStatus(SignedDoc doc, String challenge) {
 		try {
-			return DigiDocServiceFactory.ddsGetStatus(doc, challenge);
+			return mobileIdService.getStatus(doc, challenge);
 		} catch (DigiDocException e) {
 			throw new RuntimeException(e);
 		}

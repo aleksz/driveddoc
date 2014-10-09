@@ -72,6 +72,7 @@ dependencies {
 	compile 'com.google.inject:guice:4.0-beta'
 	compile 'com.google.inject.extensions:guice-servlet:4.0-beta'
 	compile 'log4j:log4j:1.2.17'
+	compile 'org.apache.httpcomponents:httpclient:4.3.4'//4.3.5 does not work on GAE
 
 	//jdigidoc	
     compile fileTree(dir: 'local-lib', includes: ['*.jar']) 

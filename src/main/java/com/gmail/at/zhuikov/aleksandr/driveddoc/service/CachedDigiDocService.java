@@ -10,6 +10,7 @@ import java.net.URLEncoder;
 import java.nio.channels.Channels;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.gmail.at.zhuikov.aleksandr.driveddoc.model.ValidatedSignedDoc;
@@ -29,6 +30,11 @@ public class CachedDigiDocService extends DigiDocService {
 	private static final Logger LOG = Logger.getLogger(CachedDigiDocService.class.getName());
 
 	private final GcsService gcsService =  GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
+	
+	@Inject
+	public CachedDigiDocService(MobileIdService mobileIdService) {
+		super(mobileIdService);
+	}
 	
 	@Override
 	public ValidatedSignedDoc parseSignedDoc(String fileName, String id, InputStream content) throws IOException  {
