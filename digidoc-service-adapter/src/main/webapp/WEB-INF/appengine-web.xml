@@ -4,7 +4,6 @@
 	<version>1</version>
 	<threadsafe>true</threadsafe>
 	<instance-class>B1</instance-class>
- 	<login>admin</login>
 	<manual-scaling>
 		<instances>1</instances>
 	</manual-scaling>
