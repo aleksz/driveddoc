@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 public class DigiDocServiceServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
-	
 	private final DigiDocServiceAccessor digiDocServiceAccessor = new DigiDocServiceAccessor();
 	
 	@Override

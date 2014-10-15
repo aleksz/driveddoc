@@ -8,19 +8,21 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.util.logging.Logger;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 public class DigiDocServiceAccessor {
 	
 	private final SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = new SignatureContainerDescriptionRepository();
 	private static final String SERVICE_URL = "https://digidocservice.sk.ee";
+	private static final Logger LOG = Logger.getLogger(DigiDocServiceAccessor.class.getName());
 	
 	public String pullUrl(InputStream msg, long length) {
 
@@ -32,8 +34,12 @@ public class DigiDocServiceAccessor {
 		request.setHeader("SOAPAction", "");
 		
 		try {
-			request.setEntity(new InputStreamEntity(msg, length));
-			return new String(IOUtils.toByteArray(httpclient.execute(request).getEntity().getContent()));
+			String msgString = new String(IOUtils.toByteArray(msg));
+			LOG.info(msgString);
+			request.setEntity(new StringEntity(msgString));
+			String result = new String(IOUtils.toByteArray(httpclient.execute(request).getEntity().getContent()));
+			LOG.info(result);
+			return result;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
