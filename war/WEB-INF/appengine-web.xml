@@ -13,4 +13,8 @@
 		<include path="/**" />
 		<include path="/**.png" expiration="1d" />
 	</static-files>
+	<automatic-scaling>
+    	<max-idle-instances>1</max-idle-instances>
+    	<min-pending-latency>15.0s</min-pending-latency>
+  	</automatic-scaling>
 </appengine-web-app>
