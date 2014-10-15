@@ -1,35 +1,23 @@
 package com.gmail.at.zhuikov.aleksandr.driveddoc.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 
-import com.gmail.at.zhuikov.aleksandr.driveddoc.model.SignatureContainerDescription;
-import com.gmail.at.zhuikov.aleksandr.driveddoc.repository.SignatureContainerDescriptionRepository;
+import com.google.appengine.api.modules.ModulesService;
+import com.google.appengine.api.modules.ModulesServiceFactory;
 
 import ee.sk.digidoc.Base64Util;
 import ee.sk.digidoc.DataFile;
 import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.Signature;
 import ee.sk.digidoc.SignedDoc;
-import ee.sk.utils.ConfigManager;
 import ee.sk.utils.ConvertUtils;
 
 
@@ -47,12 +35,7 @@ public class MobileIdService {
 	private static final String g_xmlHdr2 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:d=\"http://www.sk.ee/DigiDocService/DigiDocService_2_3.wsdl\" xmlns:mss=\"http://www.sk.ee:8096/MSSP_GW/MSSP_GW.wsdl\"><SOAP-ENV:Body SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><d:GetMobileCreateSignatureStatus>";
 	private static final String g_xmlEnd2 = "</d:GetMobileCreateSignatureStatus></SOAP-ENV:Body></SOAP-ENV:Envelope>";
 	
-	private final SignatureContainerDescriptionRepository signatureContainerDescriptionRepository;
-	
-	@Inject
-	public MobileIdService(SignatureContainerDescriptionRepository signatureContainerDescriptionRepository) {
-		this.signatureContainerDescriptionRepository = signatureContainerDescriptionRepository;
-	}
+	private final ModulesService modulesApi = ModulesServiceFactory.getModulesService();
 	
 	private static String findElemValue(String msg, String tag) {
 		int nIdx1 = 0, nIdx2 = 0;
@@ -116,8 +99,6 @@ public class MobileIdService {
 	    	throw new DigiDocException(DigiDocException.ERR_DIGIDOC_SERVICE, "Missing or invalid phone number", null);
 	    if(sCountry == null || sCountry.trim().length() < 2)
 	    	throw new DigiDocException(DigiDocException.ERR_DIGIDOC_SERVICE, "Missing or invalid country code", null);
-	    ConfigManager cfg = ConfigManager.instance();
-		String sUrl = cfg.getProperty("DDS_URL");
 		//String sProxyHost = cfg.getProperty("DIGIDOC_PROXY_HOST");
 		//String sProxyPort = cfg.getProperty("DIGIDOC_PROXY_PORT");
 		// compose soap msg
@@ -152,7 +133,7 @@ public class MobileIdService {
 		sbMsg.append(g_xmlEnd1);
 		// send soap message
 		LOG.fine("Sending:\n---\n" + sbMsg.toString() + "\n---\n");
-		String sResp = pullUrl(sUrl, sbMsg.toString());
+		String sResp = pullUrl(sbMsg.toString());
 		LOG.fine("Received:\n---\n" + sResp + "\n---\n");
 		if(sResp != null && sResp.trim().length() > 0) {
 			sSessCode = findElemValue(sResp, "Sesscode");
@@ -173,8 +154,6 @@ public class MobileIdService {
 		if (sSesscode == null || sSesscode.trim().length() == 0)
 			throw new DigiDocException(DigiDocException.ERR_DIGIDOC_SERVICE,
 					"Missing or invalid  session code", null);
-		ConfigManager cfg = ConfigManager.instance();
-		String sUrl = cfg.getProperty("DDS_URL");
 		// compose soap msg
 		StringBuffer sbMsg = new StringBuffer(g_xmlHdr2);
 		addElem(sbMsg, "Sesscode", sSesscode);
@@ -182,7 +161,7 @@ public class MobileIdService {
 		sbMsg.append(g_xmlEnd2);
 		// send soap message
 		LOG.fine("Sending:\n---\n" + sbMsg.toString() + "\n---\n");
-		String sResp = pullUrl(sUrl, sbMsg.toString());
+		String sResp = pullUrl(sbMsg.toString());
 		LOG.fine("Received:\n---\n" + sResp + "\n---\n");
 		if (sResp != null && sResp.trim().length() > 0) {
 			sStatus = findElemValue(sResp, "Status");
@@ -207,50 +186,23 @@ public class MobileIdService {
 		}
 		return sStatus;
 	}
-	
-	private String pullUrl(String url, String msg) {
 
-		HttpClient httpclient = getHttpClient();
-		
-		HttpPost request = new HttpPost(url);
-		request.setHeader("Content-Type", "text/xml; charset=utf-8");
-		request.setHeader("User-Agent", SignedDoc.LIB_NAME + " / " + SignedDoc.LIB_VERSION);
-		request.setHeader("SOAPAction", "");
-		
+	private String pullUrl(String msg) {
 		try {
-			request.setEntity(new StringEntity(msg, "UTF-8"));
-			return new String(IOUtils.toByteArray(httpclient.execute(request).getEntity().getContent()));
+	        URL url = new URL("http://" +  modulesApi.getVersionHostname("digidoc-service-adapter","v1") + "/proxy");
+	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+	        connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            IOUtils.copy(new ByteArrayInputStream(msg.getBytes("utf-8")), connection.getOutputStream());
+    
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            	return new String(IOUtils.toByteArray(connection.getInputStream()));
+            } else {
+            	LOG.warning("digidoc-service-adapter returned " + connection.getResponseCode() + " -> " + connection.getResponseMessage());
+            	return null;
+            }
 		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	protected HttpClient getHttpClient() {
-		SignatureContainerDescription description = signatureContainerDescriptionRepository.get("master");
-		
-		HttpClient client = new DefaultHttpClient();
-		KeyStore keyStore = loadKeyStore(description);
-		
-		try {
-			Scheme scheme = new Scheme("https",	new SSLSocketFactory(keyStore, description.getPassword()), 443);
-			client.getConnectionManager().getSchemeRegistry().register(scheme);
-		} catch (KeyManagementException | UnrecoverableKeyException
-				| NoSuchAlgorithmException | KeyStoreException e) {
-			throw new RuntimeException(e);
-		}
-	    return client;
-	}
-
-	protected KeyStore loadKeyStore(SignatureContainerDescription description) {
-		
-		try {
-			KeyStore trustStore = KeyStore.getInstance("pkcs12");
-			
-			try(InputStream instream = signatureContainerDescriptionRepository.getContent(description)) {
-				trustStore.load(instream, description.getPassword().toCharArray());
-			} 
-			return trustStore;
-		} catch (CertificateException|NoSuchAlgorithmException|KeyStoreException|IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

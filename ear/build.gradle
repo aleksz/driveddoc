@@ -1,0 +1,22 @@
+apply plugin: 'ear'
+apply plugin: 'appengine'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.google.appengine:gradle-appengine-plugin:1.9.12'
+    }
+}
+
+dependencies {
+    appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.12'
+    deploy project(path: ':digidoc-service-adapter', configuration: 'archives')
+    deploy project(path: ':', configuration: 'archives')
+}
+
+appengine {
+    downloadSdk = true
+}

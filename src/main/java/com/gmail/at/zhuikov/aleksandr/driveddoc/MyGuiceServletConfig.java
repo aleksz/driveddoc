@@ -47,7 +47,7 @@ public class MyGuiceServletConfig extends GuiceServletContextListener {
 				filter("/").through(LegacyDriveUIIntegrationFilter.class);
 				filter("/driveui").through(DriveUIAuthenticationFilter.class);
 				filter("/*").through(AuthenticationFilter.class);
-				serveRegex("/api/containers/\\w+").with(FileServlet.class);;
+				serveRegex("/api/containers/\\w+").with(FileServlet.class);
 				serve("/api/user").with(UserServlet.class);
 				serve("/api/sign").with(SignServlet.class);
 				serve("/api/sign/id").with(IdSignServlet.class);

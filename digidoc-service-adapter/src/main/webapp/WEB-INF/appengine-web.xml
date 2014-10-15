@@ -1,0 +1,11 @@
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+	<application>driveddoc</application>
+	<module>digidoc-service-adapter</module>
+	<version>1</version>
+	<threadsafe>true</threadsafe>
+	<instance-class>B1</instance-class>
+ 	<login>admin</login>
+	<manual-scaling>
+		<instances>1</instances>
+	</manual-scaling>
+</appengine-web-app>
