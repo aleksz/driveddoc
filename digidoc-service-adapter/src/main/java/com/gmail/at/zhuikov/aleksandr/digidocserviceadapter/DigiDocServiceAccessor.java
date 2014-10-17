@@ -14,20 +14,27 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 
 public class DigiDocServiceAccessor {
 	
 	private final SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = new SignatureContainerDescriptionRepository();
 	private static final String SERVICE_URL = "https://digidocservice.sk.ee";
 	private static final Logger LOG = Logger.getLogger(DigiDocServiceAccessor.class.getName());
+	private final HttpClient httpclient;
+	
+	public DigiDocServiceAccessor() {
+		httpclient = getHttpClient();
+	}
 	
 	public String pullUrl(InputStream msg, long length) {
 
-		HttpClient httpclient = getHttpClient();
-		
 		HttpPost request = new HttpPost(SERVICE_URL);
 		request.setHeader("Content-Type", "text/xml; charset=utf-8");
 		request.setHeader("User-Agent",  "JDigiDoc /3.8.0.3 ");
@@ -48,17 +55,16 @@ public class DigiDocServiceAccessor {
 	private HttpClient getHttpClient() {
 		SignatureContainerDescription description = signatureContainerDescriptionRepository.get("master");
 		
-		HttpClient client = new DefaultHttpClient();
-		KeyStore keyStore = loadKeyStore(description);
-		
 		try {
-			Scheme scheme = new Scheme("https",	new SSLSocketFactory(keyStore, description.getPassword()), 443);
-			client.getConnectionManager().getSchemeRegistry().register(scheme);
+			KeyStore keyStore = loadKeyStore(description);
+			HttpParams params = new BasicHttpParams();
+			SchemeRegistry schemeRegistry = new SchemeRegistry();
+			schemeRegistry.register(new Scheme("https",	new SSLSocketFactory(keyStore, description.getPassword()), 443));
+			return new DefaultHttpClient(new ThreadSafeClientConnManager(params, schemeRegistry), params);
 		} catch (KeyManagementException | UnrecoverableKeyException
 				| NoSuchAlgorithmException | KeyStoreException e) {
 			throw new RuntimeException(e);
 		}
-	    return client;
 	}
 
 	protected KeyStore loadKeyStore(SignatureContainerDescription description) {
