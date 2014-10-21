@@ -193,6 +193,7 @@ public class MobileIdService {
 	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 	        connection.setDoInput(true);
             connection.setDoOutput(true);
+            connection.setConnectTimeout(20 * 1000);
             connection.setRequestMethod("POST");
             IOUtils.copy(new ByteArrayInputStream(msg.getBytes("utf-8")), connection.getOutputStream());
     
