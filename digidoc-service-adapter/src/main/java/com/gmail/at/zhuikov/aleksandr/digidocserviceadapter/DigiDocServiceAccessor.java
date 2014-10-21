@@ -21,16 +21,20 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.SyncBasicHttpContext;
 
 public class DigiDocServiceAccessor {
 	
 	private final SignatureContainerDescriptionRepository signatureContainerDescriptionRepository = new SignatureContainerDescriptionRepository();
 	private static final String SERVICE_URL = "https://digidocservice.sk.ee";
 	private static final Logger LOG = Logger.getLogger(DigiDocServiceAccessor.class.getName());
-	private final HttpClient httpclient;
+	private final HttpClient httpClient;
+	private final HttpContext httpContext;
 	
 	public DigiDocServiceAccessor() {
-		httpclient = getHttpClient();
+		httpClient = getHttpClient();
+		httpContext = new SyncBasicHttpContext(null);
 	}
 	
 	public String pullUrl(InputStream msg, long length) {
@@ -44,7 +48,7 @@ public class DigiDocServiceAccessor {
 			String msgString = new String(IOUtils.toByteArray(msg));
 			LOG.info(msgString);
 			request.setEntity(new StringEntity(msgString));
-			String result = new String(IOUtils.toByteArray(httpclient.execute(request).getEntity().getContent()));
+			String result = new String(IOUtils.toByteArray(httpClient.execute(request, httpContext).getEntity().getContent()));
 			LOG.info(result);
 			return result;
 		} catch (IOException e) {
