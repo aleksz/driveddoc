@@ -27,7 +27,7 @@ public class UserService {
 	public User getUserInfo(String userId, Credential credential) throws IOException {
 		Oauth2 service = getOauth2Service(credential);
 		Userinfo userInfo = service.userinfo().get().execute();
-		return new User(userInfo.getEmail(), userInfo.getLink());
+		return new User(userInfo.getEmail(), userInfo.getLink(), userInfo.getPicture());
 	}
 
 	/**

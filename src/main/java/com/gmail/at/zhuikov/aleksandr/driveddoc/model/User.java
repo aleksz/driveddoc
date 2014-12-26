@@ -8,10 +8,16 @@ public class User implements Serializable {
 	
 	private final String email;
 	private final String link;
+	private final String pictureUrl;
 	
-	public User(String email, String link) {
+	public User(String email, String link, String pictureUrl) {
 		this.email = email;
 		this.link = link;
+		this.pictureUrl = pictureUrl;
+	}
+	
+	public String getPictureUrl() {
+		return pictureUrl;
 	}
 	
 	public String getEmail() {
