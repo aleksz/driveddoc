@@ -2,7 +2,7 @@
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
 	<application>driveddoc</application>
 	<module>default</module>
-	<version>36</version>
+	<version>37</version>
 	<threadsafe>true</threadsafe>
 	<!-- Configure java.util.logging -->
 	<system-properties>
