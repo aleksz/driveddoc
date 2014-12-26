@@ -193,6 +193,7 @@ module.controller('SignatureCtrl', ['$scope', 'backend', 'doc', '$timeout',
 					} else if (response.data == 'SIGNATURE') {
 						$scope.close();
 						editor.load(doc.info.id, true);
+						$analytics.eventTrack('Signed by MID', {  category: 'sign' })
 					} else if (response.data == 'EXPIRED_TRANSACTION') {
 						$scope.close();
 						$rootScope.$broadcast('error', {
