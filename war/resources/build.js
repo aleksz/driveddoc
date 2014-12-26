@@ -10,7 +10,8 @@
     	"angular-resource": "empty:",
     	"ui-bootstrap": "empty:",
     	"ui-bootstrap-tpls": "empty:",
-    	"spin": "empty:"
+    	"spin": "empty:",
+    	"moment": "empty:"
     },
     name: "public/js/main"
 })

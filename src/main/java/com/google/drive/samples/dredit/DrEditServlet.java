@@ -29,6 +29,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Abstract servlet that sets up credentials and provides some convenience
@@ -76,7 +77,8 @@ public abstract class DrEditServlet extends AuthorizationServlet {
       // TODO(burcud): Initialize Gson instance for once.
       resp.setContentType("application/json");
       resp.setCharacterEncoding("utf-8");
-      resp.getWriter().print(new Gson().toJson(obj).toString());
+      Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
+      resp.getWriter().print(gson.toJson(obj).toString());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

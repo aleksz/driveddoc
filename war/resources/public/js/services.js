@@ -81,7 +81,7 @@ module.factory('editor', function (doc, backend, $q, $rootScope, $log, $resource
                 
                 this.loading = true;
                 
-                return Container.get({ 'fileId':id }).$promise.then(angular.bind(this, function (result) {
+                return Container.get({ 'fileId': id }).$promise.then(angular.bind(this, function (result) {
                         return result;
                     }), function (errorResponse) {
 
