@@ -23,7 +23,7 @@ define(['angular', 'services', 'directives', 'controllers', 'angular-route',
 			controller: 'AdminController'
 		});
 	
-	}]).config(['$httpProvider', function ($httpProvider) {
+	}]).config(['$httpProvider', function($httpProvider) {
 	
 		function convertDateStringsToDates(input) {
 		    // Ignore things that aren't objects.
