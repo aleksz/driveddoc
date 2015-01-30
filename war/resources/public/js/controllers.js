@@ -3,11 +3,12 @@ define(['angular', 'services'], function(angular) {
 
 var module = angular.module('app.controllers', [])
 
-module.controller('UserCtrl', ['$scope', 'backend', function($scope, backend) {
+module.controller('UserCtrl', ['$scope', 'backend', '$window', function($scope, backend, $window) {
 	$scope.user = null;
 	$scope.login = function() {
 		backend.user().then(function(response) {
 			$scope.user = response.data;
+			$window.ga('set', '&uid', $scope.user.email); 
 		});
 	}
 	$scope.login();
