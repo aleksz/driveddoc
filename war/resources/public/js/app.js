@@ -36,7 +36,7 @@ define(['angular', 'services', 'directives', 'controllers', 'angular-route',
 
 		        if (typeof value === "object") {
 		            convertDateStringsToDates(value);
-		        } else if (moment(value).isValid()) {
+		        } else if (typeof value === "string" && moment(value).isValid()) {
 		        	input[key] = moment(value).toDate();
 		        }
 		    }
