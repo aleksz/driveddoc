@@ -1,6 +1,6 @@
 define(['angular', 'services', 'directives', 'controllers', 'angular-route', 
         'angular-resource', 'ui-bootstrap', 'ui-bootstrap-tpls', 
-        'angulartics-google-analytics', 'moment'], function(angular) {
+        'angulartics-google-analytics', 'moment', 'public/js/nps/index'], function(angular) {
 
 	'use strict';
 
@@ -9,9 +9,10 @@ define(['angular', 'services', 'directives', 'controllers', 'angular-route',
 	                       'app.directives', 
 	                       'app.controllers', 
 	                       'ngRoute', 
-	                       'ui.bootstrap', 
+	                       'ui.bootstrap',
 	                       'ngResource', 
-	                       'angulartics.google.analytics'
+	                       'angulartics.google.analytics',
+	                       'nps'
 	                       ])
 	                       .config(['$routeProvider', function ($routeProvider) {
 	
