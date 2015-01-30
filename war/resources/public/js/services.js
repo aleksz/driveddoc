@@ -23,12 +23,16 @@ module.factory('idCard', function($log, $rootScope, $q, $timeout) {
 		getCertificate: function() {
 			
 			var _this = this;
-			
-			if (!plugin) {
-				_this.load();
-			}
-			
 			var deferred = $q.defer();
+
+			if (!plugin) {
+				try {
+					_this.load();
+				} catch(ex) {
+					deferred.reject(ex);
+					return deferred.promise;
+				}
+			}
 			
 			plugin.getCertificate(function(cert) {
 				deferred.resolve(cert);
