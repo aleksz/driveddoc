@@ -89,10 +89,12 @@
 		</div>
 	</nav>
 
-    <myalert id="error"></myalert>
     <id-card></id-card>
     
-    <div class="container" ng-view></div>
+    <div class="container">
+	    <myalert id="error"></myalert>
+	    <div x-ng-view></div>
+    </div>
 
     <script src="https://www.google.com/jsapi"></script>
     <script src="https://apis.google.com/js/api.js"></script>
