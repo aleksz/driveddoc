@@ -76,7 +76,7 @@ module.directive('editor', function(editor) {
     };
 });
 
-module.directive('myalert', function ($rootScope) {
+module.directive('myalert', function ($rootScope, $analytics) {
         return {
             restrict:'E',
             replace:true,
@@ -84,6 +84,7 @@ module.directive('myalert', function ($rootScope) {
             	element.hide();
                 $rootScope.$on('error',
                     function (event, data) {
+                		$analytics.eventTrack('alert', {  category: 'errors', label: data.message });
                         scope.message = data.message;
                         element.show();
                     });
